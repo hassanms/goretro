@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { Outlet, Link } from "react-router-dom";
 import Header from "./components/header";
+import HowItWorks from "./routes/howItWorks";
 
 function App() {
   return (
@@ -10,7 +11,7 @@ function App() {
         goretro
       </h1> */}
       <Header />
-      <nav
+      {/* <nav
         style={{
           borderBottom: "solid 1px",
           paddingBottom: "1rem",
@@ -18,8 +19,8 @@ function App() {
       >
         <Link to="/how-it-works">How It Works</Link> |{" "}
         <Link to="/current-stock">Current Stock</Link>
-      </nav>
-      <Outlet />
+      </nav>*/}
+      <Outlet /> 
     </div>
   );
 }

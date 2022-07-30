@@ -10,6 +10,8 @@ import {
 } from "react-router-dom";
 import HowItWorks from "./routes/howItWorks";
 import CurrentStock from "./routes/currentStock";
+import PreOrder from './routes/preOrder';
+import Faqs from './routes/faqs';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -19,6 +21,8 @@ root.render(
         <Route path="/" element={<App />} >
           <Route path="how-it-works" element={<HowItWorks />} />
           <Route path="current-stock" element={<CurrentStock />} />
+          <Route path="pre-order" element={<PreOrder />} />
+          <Route path="faqs" element={<Faqs />} />
         </Route>
       </Routes>
     </BrowserRouter>

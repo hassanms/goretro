@@ -10,22 +10,49 @@ class CurrentStockController extends Controller
 {
     function getData() 
     {
+        $viewing = "";
+
+        $category = "";
+
         $data = CurrentStock::all();
         
-        // $new_data = [];
+        $new_data = [];
 
-        // foreach($data as $d)
-        // {
-        //     $new_data[] = [
-        //         'id' => $d->id,
-        //         'name' => $d->name,
-        //         'items_left' => $d->items_left,
-        //         'viewing' => if($d->category === 'popular') { random_int(1,3) } elseif 
-        //         'created_at' => $d->created_at,
-        //         'updated_at' => $d->updated_at
-        //     ];
-        // }
+        foreach($data as $record)
+        {
+            $new_data[] = 
+            [
+                'id' => $record->id,
+                'name' => $record->name,
+                'items_left' => $record->items_left,
+                'category' => $record->category,
+            ];
+            if($record->category === 'popular')
+            {
+               $viewing = rand(1,4);
+               $new_data[] = [
+                'views' => $viewing
+               ];  
+            }
+    
+            else if($record->category === 'average')
+            {
+                $viewing = rand(0,3);
+               $new_data[] = [
+                'views' => $viewing
+               ];    
+            }
+    
+            else if($record->category === 'common')
+            {
+                $viewing = rand(0,1);
+                $new_data[] = [
+                 'views' => $viewing
+                ];    
+            }
+           
+        }
 
-        return [$data];
+        return [$new_data, $viewing];
     }
 }

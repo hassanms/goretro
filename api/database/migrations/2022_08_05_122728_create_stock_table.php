@@ -14,9 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('current_stocks', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->string('name');
             $table->integer('items_left');
+            $table->string('category');
+            $table->integer('views');
             $table->timestamps();
         });
     }

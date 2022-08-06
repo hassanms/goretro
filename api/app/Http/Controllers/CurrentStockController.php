@@ -13,8 +13,6 @@ class CurrentStockController extends Controller
     {
         $viewing = "";
 
-        $category = "";
-
         $data = CurrentStock::all();
         
         $new_data = [];

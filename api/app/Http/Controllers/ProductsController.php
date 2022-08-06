@@ -29,7 +29,6 @@ class ProductsController extends Controller
         $product->main_images_path = $request->main_image;
         $product->second_images_path = $request->secondary_image;
         $product->price = $request->price;
-        $product->shopping_cart = $request->shopping_cart;
         $product->tier = $request->tier;
         $product->locked = $request->locked;
 
@@ -81,7 +80,8 @@ class ProductsController extends Controller
     }
 
      function checkItemLock($status)
-    {       
+    {
+        $locked = 0;       
         $query = DB::table('products')
         ->select('id', 'item_name', 'locked')
         ->where('locked', $status)->get();
@@ -93,20 +93,17 @@ class ProductsController extends Controller
                 'item' => $record->item_name,
                 'locked' => $record->locked,
             ];
-
-            if($record->locked === '1')
-            {
-                $unlocked = "locked";
-            }
-            else if($record->locked === '0')
-            {
-                $unlocked = "unlocked";
-                
-            }
+            $locked = $record->locked;
         }
-            $this->message = "This item has been chosen by another customer and is in their cart. 
-            It will become available if they do not purchase within 1 hour";
-            
-            return [$this->item, $unlocked];
+        
+        if($locked = 1)
+        {
+            return[$this->item, "This item has been chosen by another customer and is in their cart. It will become available if they do not purchase within 1 hour"];
+        }
+        else if($locked = 0)
+        {
+            return[$this->item, "Item is unlocked please proceed to checkout."];
+        }
+        return[$this->item, $locked];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\CurrentStock;
 
@@ -54,5 +55,18 @@ class CurrentStockController extends Controller
         }
 
         return [$new_data, $viewing];
+    }
+
+    function getViews($category)
+    {
+        $views = DB::table('current_stocks')
+        ->select('views')
+        ->where('category', $category)->get();
+
+        $items_left = DB::table('current_stocks')
+        ->select('items_left')
+        ->where('category', $category)->get();
+
+        return [$views, $items_left];
     }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CurrentStockController;
+use App\Http\Controllers\PreOrderController;
 use App\Http\Controllers\ProductsController;
 
 /*
@@ -27,6 +28,12 @@ Route::get("/getViews/{category}", [CurrentStockController::class, "getViews"]);
 Route::get("/carousel", [ProductsController::class, "getAllProducts"]);
 Route::get("/carousel/{category}", [ProductsController::class, "displayProductByCategory"]);
 Route::get("/carousel/status/{lockstatus}", [ProductsController::class, "checkItemLock"]);
+Route::get("/carousel//checkout", [ProductsController::class, "checkout"]);
 
 //Post Routes
 Route::post("/carousel", [ProductsController::class, "addProduct"]);
+Route::post("/carousel//cart", [ProductsController::class, "shoppingCart"]);
+Route::post("/carousel//add", [ProductsController::class, "addToCart"]);
+
+//Pre Order Routes
+Route::get("/pre-order", [PreOrderController::class, "preOrders"]);

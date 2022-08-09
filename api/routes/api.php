@@ -37,3 +37,7 @@ Route::post("/carousel//add", [ProductsController::class, "addToCart"]);
 
 //Pre Order Routes
 Route::get("/pre-order", [PreOrderController::class, "preOrders"]);
+Route::get("/pre-order/filter/{batch}", [PreOrderController::class, "filterByBatch"]);
+
+
+Route::post("/pre-order", [PreOrderController::class, "addOrder"]);

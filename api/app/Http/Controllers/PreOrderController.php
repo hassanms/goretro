@@ -51,13 +51,109 @@ class PreOrderController extends Controller
 
     function filterByBatch($batch)
     {
+        $batch1 = [];
+        $batch2 = [];
+        $batch3 = [];
+        $batch4 = [];
+        
         $pre_order = DB::table('pre-orders')
         ->select()
         ->where('batch', $batch)->get();
 
         foreach($pre_order as $data)
         {
-            
+           if($data->batch == 'Batch 1')
+           {
+            $batch1 = [
+                'supplier_name' => $data->supplier_name,
+                'supplier_address' => $data->supplier_address,
+                'status' => $data->status,
+                'due_date' => $data->due_date,
+                'item_category' => $data->item_category,
+                'item_name' => $data->item_name,
+                'brand' => $data->brand,
+                'color' => $data->color,
+                'main_images_path' => $data->main_images_path,
+                'second_images_path' => $data->second_images_path,
+                'price' => $data->price,
+                'shopping_cart' => $data->shopping_cart,
+                'tier' => $data->tier,
+            ];
+           }
+           
+           else if($data->batch == 'Batch 2')
+           {
+            $batch2 = [
+                'supplier_name' => $data->supplier_name,
+                'supplier_address' => $data->supplier_address,
+                'status' => $data->status,
+                'due_date' => $data->due_date,
+                'item_category' => $data->item_category,
+                'item_name' => $data->item_name,
+                'brand' => $data->brand,
+                'color' => $data->color,
+                'main_images_path' => $data->main_images_path,
+                'second_images_path' => $data->second_images_path,
+                'price' => $data->price,
+                'shopping_cart' => $data->shopping_cart,
+                'tier' => $data->tier,
+            ];
+           }
+           
+           else if($data->batch == 'Batch 3')
+           {
+            $batch3 = [
+                'supplier_name' => $data->supplier_name,
+                'supplier_address' => $data->supplier_address,
+                'status' => $data->status,
+                'due_date' => $data->due_date,
+                'item_category' => $data->item_category,
+                'item_name' => $data->item_name,
+                'brand' => $data->brand,
+                'color' => $data->color,
+                'main_images_path' => $data->main_images_path,
+                'second_images_path' => $data->second_images_path,
+                'price' => $data->price,
+                'shopping_cart' => $data->shopping_cart,
+                'tier' => $data->tier,
+            ];
+           }
+
+           else if($data->batch == 'Batch 4')
+           {
+            $batch3 = [
+                'supplier_name' => $data->supplier_name,
+                'supplier_address' => $data->supplier_address,
+                'status' => $data->status,
+                'due_date' => $data->due_date,
+                'item_category' => $data->item_category,
+                'item_name' => $data->item_name,
+                'brand' => $data->brand,
+                'color' => $data->color,
+                'main_images_path' => $data->main_images_path,
+                'second_images_path' => $data->second_images_path,
+                'price' => $data->price,
+                'shopping_cart' => $data->shopping_cart,
+                'tier' => $data->tier,
+            ];
+           }
+        }
+
+        if(count($batch1) > 1)
+        {
+            return[$batch1, "Batch arriving soonest"];
+        }
+        else if(count($batch2) > 1)
+        {
+            return[$batch2, "Batch arriving second"];
+        }
+        else if(count($batch3) > 1)
+        {
+            return[$batch3, "Batch arriving third"];
+        }
+        else if(count($batch4) > 1)
+        {
+            return[$batch4, "Batch arriving fourth"];
         }
     }
 }

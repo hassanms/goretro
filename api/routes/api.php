@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CurrentStockController;
 use App\Http\Controllers\PreOrderController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\StripeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,8 @@ Route::get("/carousel//checkout", [ProductsController::class, "checkout"]);
 Route::post("/carousel", [ProductsController::class, "addProduct"]);
 Route::post("/carousel//cart", [ProductsController::class, "shoppingCart"]);
 Route::post("/carousel//add", [ProductsController::class, "addToCart"]);
+
+Route::get("/checkout", [StripeController::class, "processStripe"]);
 
 //Pre Order Routes
 Route::get("/pre-order", [PreOrderController::class, "preOrders"]);

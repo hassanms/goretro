@@ -41,6 +41,10 @@ class ProductsController extends Controller
 
         $result = $product->save();
 
+        /**
+         *  Add products to stripe dynamically using webhooks
+         */
+
         if($result)
         {
             
@@ -194,6 +198,10 @@ class ProductsController extends Controller
 
         $result = $cart->save();
 
+        /**
+         *  Checkout to Stripe
+         */
+
         if($result)
         {
             
@@ -248,6 +256,9 @@ class ProductsController extends Controller
             {
                 //Finished! Do something.
                 echo "Purchase Time Limit exceeded";
+                /**
+                 * Unlock all items in cart
+                 */
             }
             else
             {

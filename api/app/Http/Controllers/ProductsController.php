@@ -70,24 +70,25 @@ class ProductsController extends Controller
         foreach($query as $record)
         {
             $this->item[] = [
-                'item: ' => $record->item_name,
+                'item' => $record->item_name,
                 'brand' => $record->brand,
                 'image_path' => $record->main_images_path,
-                'price' => $record->price
+                'price' => $record->price,
+                'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
             ];
 
-            if($record->second_images_path != null)
-            {
-                $this->item[] = [
-                    'damage_image_path' => $record->second_images_path
-                ];
-            }
-            else
-            {
-                $this->item[] = [
-                    'damage_image_path' => "null"
-                ];
-            }
+            // if($record->second_images_path != null)
+            // {
+            //     $this->item[] = [
+            //         'damage_image_path' => $record->second_images_path
+            //     ];
+            // }
+            // else
+            // {
+            //     $this->item[] = [
+            //         'damage_image_path' => "null"
+            //     ];
+            // }
         }
 
         return [$this->item];

@@ -12,6 +12,7 @@ import HowItWorks from "./routes/howItWorks";
 import CurrentStock from "./routes/currentStock";
 import PreOrder from './routes/preOrder';
 import Faqs from './routes/faqs';
+import Sweatshirts from './routes/Sweatshirts';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -23,6 +24,7 @@ root.render(
           <Route path="current-stock" element={<CurrentStock />} />
           <Route path="pre-order" element={<PreOrder />} />
           <Route path="faqs" element={<Faqs />} />
+          <Route path="sweatshirts" element={<Sweatshirts />} />
         </Route>
       </Routes>
     </BrowserRouter>

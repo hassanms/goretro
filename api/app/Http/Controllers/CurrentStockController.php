@@ -7,6 +7,27 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\CurrentStock;
 
+function getViews($category)
+{
+    if($category === 'popular')
+    {
+        $viewing = rand(1,4);
+        return $viewing;
+    }
+
+    else if($category === 'average')
+    {
+        $viewing = rand(0,3);
+        return $viewing;
+    }
+
+    else if($category === 'common')
+    {
+        $viewing = rand(0,1);
+        return $viewing;
+    }
+}
+
 class CurrentStockController extends Controller
 {
     function getData() 
@@ -25,31 +46,8 @@ class CurrentStockController extends Controller
                 'name' => $record->name,
                 'items_left' => $record->items_left,
                 'category' => $record->category,
+                'views' => getViews($record->category)
             ];
-            if($record->category === 'popular')
-            {
-               $viewing = rand(1,4);
-               $new_data[] = [
-                'views' => $viewing
-               ];  
-            }
-    
-            else if($record->category === 'average')
-            {
-                $viewing = rand(0,3);
-               $new_data[] = [
-                'views' => $viewing
-               ];    
-            }
-    
-            else if($record->category === 'common')
-            {
-                $viewing = rand(0,1);
-                $new_data[] = [
-                 'views' => $viewing
-                ];    
-            }
-           
         }
 
         return [$new_data, $viewing];

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useSearchParams, useNavigate  } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import "tw-elements";
 
 export default function Carousel() {
@@ -11,7 +11,6 @@ export default function Carousel() {
   useEffect(() => {
       axios.get(`http://127.0.0.1:8000/api/carousel/${searchParams.get("category")}`)
       .then(res => { setItems(res.data[0][0]) })
-     
   }, [])
 
   const handleInput = (name, category, price, tier, status="complete") => {
@@ -35,7 +34,7 @@ export default function Carousel() {
             
             {/* First Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
-            <a href={items.image_path} target="_blank">
+            <a href={items.image_path} target="__blank" rel="noreferrer">
               <img
                 src={items.image_path}
                 alt="First card"
@@ -46,7 +45,7 @@ export default function Carousel() {
 
             {/* Second Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
-            <a href={items.image_path} target="_blank">
+            <a href={items.image_path} target="__blank" rel="noreferrer">
               <img
                 src={items.image_path}
                 alt="First card"
@@ -57,7 +56,7 @@ export default function Carousel() {
 
             {/* Third Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
-              <a href={items.image_path} target="_blank">
+              <a href={items.image_path} target="__blank" rel="noreferrer">
               <img
                 src={items.image_path}
                 alt="First card"

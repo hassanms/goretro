@@ -11,20 +11,17 @@ function getViews($category)
 {
     if($category === 'popular')
     {
-        $viewing = rand(4,6);
-        return $viewing;
+        return rand(4,6);
     }
 
     else if($category === 'average')
     {
-        $viewing = rand(0,3);
-        return $viewing;
+        return rand(0,3);
     }
 
     else if($category === 'common')
     {
-        $viewing = rand(0,2);
-        return $viewing;
+        return rand(0,2);
     }
 }
 
@@ -32,8 +29,6 @@ class CurrentStockController extends Controller
 {
     function getData() 
     {
-        $viewing = "";
-
         $data = CurrentStock::all();
         
         $new_data = [];
@@ -51,6 +46,6 @@ class CurrentStockController extends Controller
             ];
         }
 
-        return [$new_data];
+        return $new_data;
     }
 }

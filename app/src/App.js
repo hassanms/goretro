@@ -1,25 +1,18 @@
 import logo from './logo.svg';
 import './App.css';
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Header from "./components/header";
 import HowItWorks from "./routes/howItWorks";
+import { useLocation } from "react-router-dom"
 
 function App() {
   return (
-    <div className="App">
-      {/* <h1 className="App-header">
-        goretro
-      </h1> */}
+    <div className="App" class="bg-orange-50">
       <Header />
-      {/* <nav
-        style={{
-          borderBottom: "solid 1px",
-          paddingBottom: "1rem",
-        }}
-      >
-        <Link to="/how-it-works">How It Works</Link> |{" "}
-        <Link to="/current-stock">Current Stock</Link>
-      </nav>*/}
+      {
+        useLocation().pathname === "/" &&
+        <HowItWorks />
+      }
       <Outlet /> 
     </div>
   );

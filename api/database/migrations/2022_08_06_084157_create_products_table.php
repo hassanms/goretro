@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->increments('id')->unique();
-            $table->integer('current_stock_id')->unsigned(); //Foreign Key
+            $table->integer('current_stock_id')->unsigned(); // foreign Key
             $table->string('item_category');
             $table->string('item_name');
             $table->string('brand');
@@ -25,6 +25,9 @@ return new class extends Migration
             $table->integer('price');
             $table->string('tier');
             $table->boolean('locked');
+            $table->boolean('received');
+            $table->integer('batch');
+            $table->date('arrival_date');
             
             $table->timestamps();
         });

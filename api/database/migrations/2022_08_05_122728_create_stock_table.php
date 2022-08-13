@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('items_left');
             $table->string('category');
-            $table->integer('views');
+            $table->longText('image');
             $table->timestamps();
         });
     }

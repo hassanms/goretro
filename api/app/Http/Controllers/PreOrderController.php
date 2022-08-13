@@ -6,6 +6,24 @@ use Illuminate\Http\Request;
 use App\Models\PreOrder;
 use Illuminate\Support\Facades\DB;
 
+function getViews($category)
+{
+    if($category === 'popular')
+    {
+        return rand(4,6);
+    }
+
+    else if($category === 'average')
+    {
+        return rand(0,3);
+    }
+
+    else if($category === 'common')
+    {
+        return rand(0,2);
+    }
+}
+
 class PreOrderController extends Controller
 {
     //
@@ -13,7 +31,23 @@ class PreOrderController extends Controller
 
     function preOrders()
     {
-        return[PreOrder::all()];
+        $new_data = [];
+        $data = PreOrder::all();
+        
+        foreach($data as $record)
+        {
+            $new_data[] = 
+            [
+                'id' => $record->id,
+                'name' => $record->name,
+                'items_left' => $record->items_left,
+                'category' => $record->category,
+                'image' => $record->image,
+                'views' => getViews($record->category)
+            ];
+        }
+
+        return $new_data;
     }
 
     function addOrder(Request $request)

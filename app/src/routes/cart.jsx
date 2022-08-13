@@ -6,14 +6,34 @@ import "tw-elements";
 export default function Cart()
 {
      const cartObj = JSON.parse(localStorage.getItem("cart"))
-    //return HTML
+     const totalItems = cartObj.length
+     const subTotal = cartObj.subtotal
+     const navigate = useNavigate();
+
+     const [items, setItems] = useState([])
+
+     const stripeCheckout = (name, price) => {
+        const payload = {name, price, totalItems, subTotal}
+        axios.post('',payload).
+        then(res =>{})
+        //Navigate to stripe checkout link
+        .catch(error => {})
+     }
+    
+    
+    
+    
+    
+     //return HTML
 
     return (
       <main>
         
         <div>
 <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-  <div class="fixed inset-0 bg-gray-500 bg-opacity-80 transition-opacity"></div>
+  <div>
+    <img class="w-4/5" src="https://images.pexels.com/photos/1666738/pexels-photo-1666738.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"></img>
+  </div>
   <div class="fixed inset-0 overflow-hidden">
     <div class="absolute inset-0 overflow-hidden">
       <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
@@ -72,7 +92,7 @@ export default function Cart()
               </div>
               <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
               <div class="mt-6">
-                <a href="#" class="flex items-center justify-center rounded-md border border-transparent bg-gray-400 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700">Checkout</a>
+                <button onClick={stripeCheckout()} class="flex items-center justify-center rounded-md border border-transparent bg-gray-400 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700">Checkout</button>
               </div>
               <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
                 <p>

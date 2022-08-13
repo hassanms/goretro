@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom"
 
 function App() {
   return (
-    <div className="App" class="bg-orange-50">
+    <div style={{ minHeight: "100%" }}className="App" class="bg-orange-50 h-screen">
       <Header />
       {
         useLocation().pathname === "/" &&

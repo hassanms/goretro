@@ -20,8 +20,7 @@ export default function Faqs() {
                 </summary>
 
                 <span>
-                  GoRetro basically offers a platform for wholesale dealers and individual customers<br/>
-                  to purchase vintage stuff.
+                  GoRetro basically offers a platform for wholesale dealers and individual customers to purchase vintage stuff.
                 </span>
               </details>
               <details class="mb-4">
@@ -30,8 +29,7 @@ export default function Faqs() {
                 </summary>
 
                 <span>
-                  To place your order go to current stock and from there choose category you want to buy<br/>
-                  then add to cart and proceed to checkout.
+                  To place your order go to current stock and from there choose category you want to buy then add to cart and proceed to checkout.
                 </span>
               </details>
               <details class="mb-4">
@@ -42,7 +40,7 @@ export default function Faqs() {
                 <span>
                   Available payment methods are all major bank cards <strong>VISA</strong>
                   and<strong>MasterCard</strong>. Other payment platforms include 
-                  <strong>Apple Pay, Google Pay, PayPal, Klerna Pay and Amazon Pay</strong><br/>
+                  <strong>Apple Pay, Google Pay, PayPal, Klerna Pay and Amazon Pay</strong>
                   Direct bank transfer also supported with additional fees.
                 </span>
               </details>
@@ -54,7 +52,7 @@ export default function Faqs() {
                 </summary>
 
                 <span class="px-4 py-2">
-                 The order will be shipped to your shipping address in 3 business days. <br/>
+                 The order will be shipped to your shipping address in 3 business days.
                  <strong>£50</strong> will be delivery fee. And <strong>20%</strong> Tax is applicable on orders in UK. Orders above <strong>£500</strong> are free delivery.
 
                 </span>

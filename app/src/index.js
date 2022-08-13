@@ -13,6 +13,7 @@ import CurrentStock from "./routes/currentStock";
 import PreOrder from './routes/preOrder';
 import Faqs from './routes/faqs';
 import Carousel from './routes/carousel';
+import Cart from './routes/cart'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -25,6 +26,7 @@ root.render(
           <Route path="pre-order" element={<PreOrder />} />
           <Route path="faqs" element={<Faqs />} />
           <Route path="carousel" element={<Carousel />} />
+          <Route path="cart" element={<Cart />} />
         </Route>
       </Routes>
     </BrowserRouter>

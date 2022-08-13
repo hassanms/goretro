@@ -3,8 +3,10 @@ import axios from "axios";
 import { useSearchParams, useNavigate  } from "react-router-dom";
 import "tw-elements";
 
-export default function Carousel() {
+export default function Carousel() 
+{
   const [items, setItems] = useState([]);
+  const [cart, setCart] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -26,6 +28,22 @@ export default function Carousel() {
       console.log("/api/carousel/cart didn't work")
     })
   }
+  
+  const viewCart = () => 
+  {
+    axios.get('http://127.0.0.1:8000/api/carousel//checkout')
+    .then(res => { 
+    //Proceed to checkout
+      navigate("/cart")
+      setCart(res.data)
+      localStorage.setItem("cart", JSON.stringify(res.data))
+    })
+    .catch(error => {
+      console.log("cart is not accessible")
+    })
+
+  }
+
 
   return (
     <main>
@@ -178,6 +196,7 @@ export default function Carousel() {
 
                 <button
                   class="mt-10 w-full bg-yellow-500 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => viewCart()}
                 >
                   View Cart
                 </button>

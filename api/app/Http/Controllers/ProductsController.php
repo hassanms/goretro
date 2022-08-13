@@ -130,11 +130,10 @@ class ProductsController extends Controller
 
     function addToCart(Request $request)
     {
-        //You must call the function session_start() before
-        //you attempt to work with sessions in PHP!
-        session_start();
 
-        $sessionID = $_COOKIE['PHPSESSID'];
+        $sessionID = $request->ip();
+
+       
 
         $cart = new Cart();
 
@@ -163,23 +162,22 @@ class ProductsController extends Controller
     }
 
     //Final checkout
-    function checkout()
-    {
+    function checkoutCart(Request $request)
+    {        
         $currentUser = "";
         
         //You must call the function session_start() before
         //you attempt to work with sessions in PHP!
         session_start();
-        $sessionID = $_COOKIE['PHPSESSID'];
 
         //Check to see if our countdown session
         //variable has been initialized.
         if(!isset($_SESSION['countdown']))
         {
-        //Set the countdown to 120 seconds.
-        $_SESSION['countdown'] = 5400;
-        //Store the timestamp of when the countdown began.
-        $_SESSION['time_started'] = time();
+            //Set the countdown to 120 seconds.
+            $_SESSION['countdown'] = 5400;
+            //Store the timestamp of when the countdown began.
+            $_SESSION['time_started'] = time();
         }
 
         //Get the current timestamp.
@@ -199,40 +197,47 @@ class ProductsController extends Controller
         $remainingHours = round((abs($_SESSION['countdown'] - $timeSince))/7200);
 
         //Print out the countdow
-        echo "$remainingHours hour $remainingMins minutes remaining for checkout ";
+        // echo "$remainingHours hour $remainingMins minutes remaining for checkout ";
 
         //Check if the countdown has finished.
-            if($remainingSeconds < 1)
-            {
-                //Finished! Do something.
-                echo "Purchase Time Limit exceeded";
-                /**
-                 * Unlock all items in cart
-                 */
-            }
-            else
-            {
-               $carts = Cart::all();
-
-               foreach($carts as $data)
-               {
-                    $currentUser = $data->session;
-
-                    if($currentUser == $sessionID)
-                    {
-                        $subtotal = Cart::sum('price');
-                        $total_items = Cart::count('name');
-            
-                        return[$carts, $subtotal, $total_items];
-                    }
-                    else
-                    {
-                        return["User session expired"];
-                    }
-               }
-            }
-            
+        if($remainingSeconds < 1)
+        {
+            //Finished! Do something.
+            // echo "Purchase Time Limit exceeded";
+            /**
+             * Unlock all items in cart
+             */
         }
+        else
+        {
+            
+            $carts = Cart::all();
+            $subtotal = Cart::sum('price');
+            // $total_items = Cart::count('name');
+            $ip = $request->ip();
+        
+            $extra = [
+                "subtotal" => $subtotal,
+                // "items" => $total_items
+            ];
 
+            $first = collect(["cart" => $carts]);
+            $second = collect($extra);
+            
+            foreach($carts as $data)
+            { 
+                $currentUser = $data->session;
 
+                if($currentUser == $ip)
+                {
+                    $merged = $first->merge($second);
+                    return $merged->toArray();
+                }
+                else
+                {
+                    return["Guest user not found"];
+                }
+            }
+        }
+    }
 }

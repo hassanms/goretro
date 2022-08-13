@@ -34,7 +34,7 @@ Route::get("/carousel//checkout", [ProductsController::class, "checkout"]);
 //Post Routes
 Route::post("/carousel", [ProductsController::class, "addProduct"]);
 Route::post("/carousel/cart", [ProductsController::class, "addToCart"]);
-Route::post("/carousel//checkout", [ProductsController::class, "checkout"]);
+Route::get("/carousel//checkout", [ProductsController::class, "checkoutCart"]);
 
 //Pre Order Routes
 Route::get("/pre-order", [PreOrderController::class, "preOrders"]);

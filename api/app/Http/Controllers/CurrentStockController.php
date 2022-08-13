@@ -11,7 +11,7 @@ function getViews($category)
 {
     if($category === 'popular')
     {
-        $viewing = rand(1,4);
+        $viewing = rand(4,6);
         return $viewing;
     }
 
@@ -23,7 +23,7 @@ function getViews($category)
 
     else if($category === 'common')
     {
-        $viewing = rand(0,1);
+        $viewing = rand(0,2);
         return $viewing;
     }
 }
@@ -46,23 +46,11 @@ class CurrentStockController extends Controller
                 'name' => $record->name,
                 'items_left' => $record->items_left,
                 'category' => $record->category,
+                'image' => $record->image,
                 'views' => getViews($record->category)
             ];
         }
 
-        return [$new_data, $viewing];
-    }
-
-    function getViews($category)
-    {
-        $views = DB::table('current_stocks')
-        ->select('views')
-        ->where('category', $category)->get();
-
-        $items_left = DB::table('current_stocks')
-        ->select('items_left')
-        ->where('category', $category)->get();
-
-        return [$views, $items_left];
+        return [$new_data];
     }
 }

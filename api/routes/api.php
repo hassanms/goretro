@@ -33,10 +33,8 @@ Route::get("/carousel//checkout", [ProductsController::class, "checkout"]);
 
 //Post Routes
 Route::post("/carousel", [ProductsController::class, "addProduct"]);
-Route::post("/carousel//cart", [ProductsController::class, "shoppingCart"]);
-Route::post("/carousel//add", [ProductsController::class, "addToCart"]);
-
-Route::get("/checkout", [StripeController::class, "processStripe"]);
+Route::post("/carousel/cart", [ProductsController::class, "addToCart"]);
+Route::post("/carousel//checkout", [ProductsController::class, "checkout"]);
 
 //Pre Order Routes
 Route::get("/pre-order", [PreOrderController::class, "preOrders"]);

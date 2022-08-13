@@ -18,8 +18,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('category');
             $table->string('price');
-            $table->string('email');
+            $table->string('tier');
             $table->string('status');
+            $table->string('session');
             $table->timestamps();
         });
     }

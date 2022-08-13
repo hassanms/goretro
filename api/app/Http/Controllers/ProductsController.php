@@ -64,7 +64,7 @@ class ProductsController extends Controller
          */
 
         $query = DB::table('products')
-        ->select('item_name', 'brand', 'main_images_path', 'second_images_path', 'price')
+        ->select()
         ->where('item_category' , $category)->get();
 
         foreach($query as $record)
@@ -74,6 +74,9 @@ class ProductsController extends Controller
                 'brand' => $record->brand,
                 'image_path' => $record->main_images_path,
                 'price' => $record->price,
+                'color' => $record->color,
+                'tier' => $record->tier,
+                'category' => $record->item_category,
                 'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
             ];
 
@@ -125,77 +128,22 @@ class ProductsController extends Controller
         }
     }
 
-    function shoppingCart(Request $req)
-    {
-        $tier1 = []; 
-        $tier2 = []; 
-        $tier3 = [];
-
-        $count1 = [];
-        $count2 = [];
-        $count3 = [];
-
-        $products = new Products();
-
-        foreach($req as $d)
-        {
-            $products->tier = $req->tier;
-
-            if($products->tier == "Tier 1")
-            {
-                $tier1 = [
-                    'name:' => $req->item_name,
-                    'category' => $req->item_category,
-                    'brand' => $req->brand,
-                    'color' => $req->color,
-                    'price' => $req->price,
-                ]; 
-
-                $count1 = array_count_values($tier1);
-            }
-
-            else if($products->tier == "Tier 2")
-            {
-                $tier2 = [
-                    'name:' => $req->item_name,
-                    'category' => $req->item_category,
-                    'brand' => $req->brand,
-                    'color' => $req->color,
-                    'price' => $req->price,
-                ];
-                
-                $count2 = array_count_values($tier2);
-            }
-
-            else if($products->tier == "Tier 3")
-            {
-                $tier3 = [
-                    'name:' => $req->item_name,
-                    'category' => $req->item_category,
-                    'brand' => $req->brand,
-                    'color' => $req->color,
-                    'price' => $req->price,
-                    'tier' => $req->tier       
-                ];
-                $count3 = array_count_values($tier3);
-            }
-        }
-
-        //Logic for make sure that customer do not buy out all good stuff.
-
-        $tier33 = $count3['Tier 3']+19;
-        
-    }
-
     function addToCart(Request $request)
     {
+        //You must call the function session_start() before
+        //you attempt to work with sessions in PHP!
+        session_start();
+
+        $sessionID = $_COOKIE['PHPSESSID'];
+
         $cart = new Cart();
 
         $cart->name = $request->name;
         $cart->category = $request->category;
         $cart->price = $request->price;
-        $cart->email = $request->email;
+        $cart->tier = $request->tier;
         $cart->status = $request->status;
+        $cart->session = $sessionID;
 
         $result = $cart->save();
 
@@ -217,10 +165,12 @@ class ProductsController extends Controller
     //Final checkout
     function checkout()
     {
+        $currentUser = "";
         
         //You must call the function session_start() before
         //you attempt to work with sessions in PHP!
         session_start();
+        $sessionID = $_COOKIE['PHPSESSID'];
 
         //Check to see if our countdown session
         //variable has been initialized.
@@ -246,12 +196,11 @@ class ProductsController extends Controller
         $remainingMins = round((abs($_SESSION['countdown'] - $timeSince))/180);
 
         //How many seconds are remaining?
-        $remainingHours = round((abs($_SESSION['countdown'] - $timeSince))/3600);
+        $remainingHours = round((abs($_SESSION['countdown'] - $timeSince))/7200);
 
         //Print out the countdow
         echo "$remainingHours hour $remainingMins minutes remaining for checkout ";
 
-        $sessionID = $_COOKIE['PHPSESSID'];
         //Check if the countdown has finished.
             if($remainingSeconds < 1)
             {
@@ -263,12 +212,26 @@ class ProductsController extends Controller
             }
             else
             {
-               $carts = Cart::all();              
-            }
-            $subtotal = Cart::sum('price');
-            $total_items = Cart::count('name');
+               $carts = Cart::all();
 
-            return[$carts, $subtotal, $total_items];
+               foreach($carts as $data)
+               {
+                    $currentUser = $data->session;
+
+                    if($currentUser == $sessionID)
+                    {
+                        $subtotal = Cart::sum('price');
+                        $total_items = Cart::count('name');
+            
+                        return[$carts, $subtotal, $total_items];
+                    }
+                    else
+                    {
+                        return["User session expired"];
+                    }
+               }
+            }
+            
         }
 
 

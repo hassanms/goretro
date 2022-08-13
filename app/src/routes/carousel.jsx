@@ -1,51 +1,70 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate  } from "react-router-dom";
 import "tw-elements";
 
 export default function Carousel() {
   const [items, setItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
       axios.get(`http://127.0.0.1:8000/api/carousel/${searchParams.get("category")}`)
       .then(res => { setItems(res.data[0][0]) })
+     
   }, [])
+
+  const handleInput = (name, category, price, tier, status="complete") => {
+    const payload = {
+      name, category, price, tier, status
+    }
+    axios.post('http://127.0.0.1:8000/api/carousel/cart', payload)
+    .then(res => { 
+      // navigate("/faqs")
+    })
+    .catch(error => {
+      console.log("/api/carousel/cart didn't work")
+    })
+  }
 
   return (
     <main>
       <div>
         <div>
           <div class="mt-6 max-w-2xl mx-auto sm:px-6 lg:max-w-7xl lg:px-8 lg:grid lg:grid-cols-3 lg:gap-x-8">
+            
+            {/* First Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
+            <a href={items.image_path} target="_blank">
               <img
                 src={items.image_path}
                 alt="First card"
                 class="w-full h-full object-center object-cover"
               ></img>
+              </a>
             </div>
-            {/* <div class="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
-              <div class="aspect-w-3 aspect-h-2 rounded-lg overflow-hidden">
-                <img
-                  src="./redsweatshirt2.webp"
-                  alt="Model wearing plain black basic tee."
-                  class="w-full h-full object-center object-cover"
-                ></img>
-              </div>
-              <div class="aspect-w-3 aspect-h-2 rounded-lg overflow-hidden">
-                <img
-                  src="./redsweatshirt4.webp"
-                  alt="Model wearing plain gray basic tee."
-                  class="w-full h-full object-center object-cover"
-                ></img>
-              </div>
-            </div>
-            <div class="aspect-w-4 aspect-h-5 sm:rounded-lg sm:overflow-hidden lg:aspect-w-3 lg:aspect-h-4">
+
+            {/* Second Card  */}
+            <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
+            <a href={items.image_path} target="_blank">
               <img
-                src="./redsweatshirt3.webp"
+                src={items.image_path}
+                alt="First card"
                 class="w-full h-full object-center object-cover"
               ></img>
-            </div> */}
+              </a>
+            </div>
+
+            {/* Third Card  */}
+            <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
+              <a href={items.image_path} target="_blank">
+              <img
+                src={items.image_path}
+                alt="First card"
+                class="w-full h-full object-center object-cover"
+              ></img>
+              </a>
+            </div>
           </div>
 
           <div class="max-w-2xl mx-auto pt-10 pb-16 px-4 sm:px-6 lg:max-w-7xl lg:pt-16 lg:pb-24 lg:px-8 lg:grid lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8">
@@ -57,11 +76,14 @@ export default function Carousel() {
               <h4 class="text-sm font-regular tracking-tight text-blue-900 sm:tracking-tight sm:text-sm">
                 Brand: {items.brand}
               </h4>
+              <h4 class="text-sm font-regular tracking-tight text-blue-900 sm:tracking-tight sm:text-sm">
+                Color: {items.color}
+              </h4>
             </div>
 
             <div class="mt-4 lg:mt-0 lg:row-span-3">
               <h2 class="sr-only">Product information</h2>
-              <p class="tracking-tight text-3xl text-gray-900">£25</p>
+              <p class="tracking-tight text-3xl text-gray-900">£{items.price}</p>
 
               <div class="mt-6">
                 <h3 class="sr-only">Reviews</h3>
@@ -126,8 +148,6 @@ export default function Carousel() {
                   </a>
                 </div>
               </div>
-
-              <form class="mt-10">
                 <div class="mt-10">
                   <div class="flex items-center justify-between">
                     <h3 class="text-sm text-gray-900 font-medium">
@@ -136,66 +156,31 @@ export default function Carousel() {
                   </div>
 
                   <fieldset class="mt-4">
-                    <legend class="sr-only">Choose a size</legend>
                     <div class="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4">
                       <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:bg-green-500 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-900 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="size-choice"
-                          value="XL"
-                          class="sr-only"
-                          aria-labelledby="size-choice-5-label"
-                        ></input>
-                        <span id="size-choice-5-label"> Yes </span>
-
-                        <span
-                          class="absolute -inset-px rounded-md pointer-events-none"
-                          aria-hidden="true"
-                        ></span>
+                        <button
+                          onClick={() => handleInput(items.item, items.category, items.price, items.tier)}
+                        >
+                          YES
+                        </button>
                       </label>
 
                       <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:bg-blue-300 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-900 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="size-choice"
-                          value="2XL"
-                          class="sr-only"
-                          aria-labelledby="size-choice-6-label"
-                        ></input>
-                        <span id="size-choice-6-label"> MayBe </span>
-
-                        <span
-                          class="absolute -inset-px rounded-md pointer-events-none"
-                          aria-hidden="true"
-                        ></span>
+                      <button>MAYBE</button>
                       </label>
 
                       <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:bg-red-500 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-900 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="size-choice"
-                          value="3XL"
-                          class="sr-only"
-                          aria-labelledby="size-choice-7-label"
-                        ></input>
-                        <span id="size-choice-7-label"> No </span>
-
-                        <span
-                          class="absolute -inset-px rounded-md pointer-events-none"
-                          aria-hidden="true"
-                        ></span>
+                      <button>NO</button>
                       </label>
                     </div>
                   </fieldset>
                 </div>
 
                 <button
-                  type="submit"
                   class="mt-10 w-full bg-yellow-500 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  Add to bag
+                  View Cart
                 </button>
-              </form>
             </div>
 
             <div class="py-10 lg:pt-6 lg:pb-16 lg:col-start-1 lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">

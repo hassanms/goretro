@@ -28,8 +28,14 @@ Route::get("/getViews/{category}", [CurrentStockController::class, "getViews"]);
 //Carousel Page routes
 Route::get("/carousel", [ProductsController::class, "getAllProducts"]);
 Route::get("/carousel/{category}", [ProductsController::class, "displayProductByCategory"]);
+Route::get("/carousel/tier", [ProductsController::class, "checkTier"]);
 Route::get("/carousel/status/{lockstatus}", [ProductsController::class, "checkItemLock"]);
-Route::get("/carousel//checkout", [ProductsController::class, "checkout"]);
+Route::get("/carousel//checkout", [ProductsController::class, "checkoutCart"]);
+
+//Show Tiers
+Route::get("/carousel//show-tier-1", [ProductsController::class, "showTier1"]);
+Route::get("/carousel//show-tier-2", [ProductsController::class, "showTier2"]);
+Route::get("/carousel//show-tier-3", [ProductsController::class, "showTier3"]);
 
 //Post Routes
 Route::post("/carousel", [ProductsController::class, "addProduct"]);

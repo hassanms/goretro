@@ -91,7 +91,9 @@ class StripeController extends Controller
                         ]
 
                   ]);
-        
+
+        /** Empty Guest Cart */
+        Cart::truncate();
 
         return[$paymentLink->url];
         /**

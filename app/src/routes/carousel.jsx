@@ -7,7 +7,10 @@ export default function Carousel() {
   const [items, setItems] = useState([]);
   const [index, setIndex] = useState(0);
   const [cart, setCart] = useState([]);
+  const [tierMessage, setTierMessage] = useState("");
+  const [whichTier, setWhichTier] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [disableCheckout, setDisableCheckout] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,15 +18,50 @@ export default function Carousel() {
       .then(res => {
         setItems(res.data[0]) 
       })
+
+
+    // fetch the cart details
+    axios
+      .get("http://127.0.0.1:8000/api/carousel//checkout")
+      .then((res) => {
+        //Proceed to checkout
+        // navigate("/cart");
+        setCart(res.data);
+        setDisableCheckout(res.data.disableCheckout);
+        if(res.data.disableCheckout === true || res.data.disableCheckout === false) {
+          localStorage.setItem("cart", JSON.stringify(res.data));
+        }
+      })
+      .catch((error) => {
+        alert(error.data);
+      });
   }, [])
 
+  // useEffect(() => {
+  //   const cart = JSON.parse(localStorage.getItem("cart"));
+  //   const newItems = []
+  //   if(cart) {
+  //     items.map((item) => {
+  //       if(cart.cart.filter(c => c.name === item.item)) {
+          
+  //       } else {
+  //         newItems.push(item)
+  //       }
+  //     })
+  //     setItems(newItems)
+  //   }
+  // }, [cart])
+
   const handleInput = (name, category, price, tier, status = "complete") => {
+    // refresh whichTier
+    setWhichTier(0)
     const payload = {
       name, category, price, tier, status
     }
     axios.post('http://127.0.0.1:8000/api/carousel/cart', payload)
       .then(res => {
-        // navigate("/faqs")
+        console.log("Added successfully")
+        setIndex(prev => prev + 1)
       })
       .catch(error => {
         console.log("/api/carousel/cart didn't work")
@@ -31,24 +69,72 @@ export default function Carousel() {
   }
 
   const viewCart = () => {
+    localStorage.setItem("cart", {});
     axios.get('http://127.0.0.1:8000/api/carousel//checkout')
       .then(res => {
         //Proceed to checkout
         navigate("/cart")
         setCart(res.data)
-        localStorage.setItem("cart", JSON.stringify(res.data))
+        // setDisableCheckout(res.data.disableCheckout)
+        if(res.data.disableCheckout === true || res.data.disableCheckout === false) {
+          localStorage.setItem("cart", JSON.stringify(res.data))
+        }
       })
       .catch(error => {
-        console.log("cart is not accessible")
+        alert(error.data)
       })
 
   }
 
   const removeItem = (itemId, remove) => {
+    // refresh whichTier
+    setWhichTier(0)
     if(remove) {
       items.filter(item => item.id !== itemId)
     }
     setIndex(prev => prev + 1)
+  }
+
+  const viewTier = (tier) => {
+
+    if(tier == "Tier 1")
+    {
+      axios.get('http://127.0.0.1:8000/api/carousel//show-tier-1')
+      .then(res => {
+        setTierMessage(res.data + " items are in Tier 1")
+        setWhichTier(1)
+        console.log(res.data+" items are in Tier 1")
+      })
+      .catch(error => {
+        console.log("cart is empty")
+      })
+    }
+    else if(tier == "Tier 2")
+    {
+      axios.get('http://127.0.0.1:8000/api/carousel//show-tier-2')
+      .then(res => {
+        setTierMessage(res.data + " items are in Tier 2")
+        setWhichTier(2)
+        console.log(res.data+" items are in Tier 2")
+      })
+      .catch(error => {
+        console.log("cart is empty")
+      })
+    }
+    if(tier == "Tier 3")
+    {
+      axios.get('http://127.0.0.1:8000/api/carousel//show-tier-3')
+      .then(res => {
+        setTierMessage(res.data + " items are in Tier 3")
+        setWhichTier(3)
+        console.log(res.data+" items are in Tier 3")
+      })
+      .catch(error => {
+        console.log("cart is empty")
+      })
+    }
+   
+
   }
 
 
@@ -203,10 +289,12 @@ export default function Carousel() {
   
               <button
                 class="mt-10 w-full bg-yellow-500 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                onClick={() => viewCart()}
+                onClick={() => !disableCheckout && viewCart()}
+                // disbaled={disableCheckout.toString()}
               >
                 View Cart
               </button>
+              <span>{cart?.disableCheckout && cart?.message}</span>
             </div>
   
             <div class="py-10 lg:pt-6 lg:pb-16 lg:col-start-1 lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
@@ -214,11 +302,12 @@ export default function Carousel() {
               <div class="mt-10">
                 <div class="mt-4 space-y-6">
                   <button
-                    type="button"
+                    onClick={() => viewTier("Tier 1")}
                     class="inline-block px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out w-full"
                   >
                     Tier 1
                   </button>
+                  <span>{ whichTier === 1 && tierMessage }</span>
                 </div>
               </div>
   
@@ -226,11 +315,12 @@ export default function Carousel() {
               <div class="mt-10">
                 <div class="mt-4 space-y-6">
                   <button
-                    type="button"
+                    onClick={() => viewTier("Tier 2")}
                     class="inline-block px-6 py-2 border-2 border-gray-200 text-black-50 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out w-full"
                   >
                     Show Tier 2
                   </button>
+                  <span>{ whichTier === 2 && tierMessage }</span>
                 </div>
               </div>
   
@@ -238,11 +328,12 @@ export default function Carousel() {
               <div class="mt-10">
                 <div class="mt-4 space-y-6">
                   <button
-                    type="button"
+                    onClick={() => viewTier("Tier 3")}
                     class="inline-block px-6 py-2 border-2 border-gray-200 text-black-50 font-medium text-xs leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out w-full"
                   >
                     Show Tier 3
                   </button>
+                  <span>{ whichTier === 3 && tierMessage }</span>
                 </div>
               </div>
             </div>

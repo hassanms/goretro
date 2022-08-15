@@ -7,6 +7,26 @@ use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+function checkTier()
+{
+    /**Iterate over current user cart */
+    $tier1 = Cart::all()->where('tier', 'Tier 1');
+
+    if (count($tier1) <= 2) {
+        return [
+            "id" => 1,
+            "message" => "Proceed to checkout",
+            "disableCheckout" => false
+        ];
+    } else {
+        return [
+            "id" => 0,
+            "message" => "you must add " . count($tier1) * 2 . " items from Tier 2 & Tier 3 to proceed",
+            // "disableCheckout" => true
+        ];
+    }
+}
+
 class ProductsController extends Controller
 {
     public $item = [];
@@ -48,13 +68,10 @@ class ProductsController extends Controller
          *  Add products to stripe dynamically using webhooks
          */
 
-        if($result)
-        {
-            
+        if ($result) {
+
             return ['Result' => 'Data saved successfully'];
-        }
-        else
-        {
+        } else {
             return ['Result' => 'Operation Failed'];
         }
     }
@@ -67,11 +84,10 @@ class ProductsController extends Controller
          */
 
         $query = DB::table('products')
-        ->select()
-        ->where('item_category' , $category)->get();
+            ->select()
+            ->where('item_category', $category)->get();
 
-        foreach($query as $record)
-        {
+        foreach ($query as $record) {
             $this->item[] = [
                 'id' => $record->id,
                 'item' => $record->item_name,
@@ -101,19 +117,18 @@ class ProductsController extends Controller
         return [$this->item];
     }
 
-     function checkItemLock($status)
+    function checkItemLock($status)
     {
         /**
          * This api will check that item is not in any customers cart
          */
 
-        $locked = 0;       
+        $locked = 0;
         $query = DB::table('products')
-        ->select()
-        ->where('locked', $status)->get();
+            ->select()
+            ->where('locked', $status)->get();
 
-        foreach($query as $record)
-        {
+        foreach ($query as $record) {
             $this->item[] = [
                 'id: ' => $record->id,
                 'item' => $record->item_name,
@@ -121,14 +136,11 @@ class ProductsController extends Controller
             ];
             $locked = $record->locked;
         }
-        
-        if($locked = $status)
-        {
-            return[$this->item, "This item has been chosen by another customer and is in their cart. It will become available if they do not purchase within 1 hour"];
-        }
-        else
-        {
-            return[$this->item, "Item is unlocked please proceed to checkout."];
+
+        if ($locked = $status) {
+            return [$this->item, "This item has been chosen by another customer and is in their cart. It will become available if they do not purchase within 1 hour"];
+        } else {
+            return [$this->item, "Item is unlocked please proceed to checkout."];
         }
     }
 
@@ -137,7 +149,7 @@ class ProductsController extends Controller
 
         $sessionID = $request->ip();
 
-       
+
 
         $cart = new Cart();
 
@@ -154,30 +166,28 @@ class ProductsController extends Controller
          *  Checkout to Stripe
          */
 
-        if($result)
-        {
-            
+        if ($result) {
+
             return ['Result' => 'Cart updated successfully'];
-        }
-        else
-        {
+        } else {
             return ['Result' => 'Operation Failed'];
         }
     }
 
+
+
     //Final checkout
     function checkoutCart(Request $request)
-    {        
+    {
         $currentUser = "";
-        
+
         //You must call the function session_start() before
         //you attempt to work with sessions in PHP!
         session_start();
 
         //Check to see if our countdown session
         //variable has been initialized.
-        if(!isset($_SESSION['countdown']))
-        {
+        if (!isset($_SESSION['countdown'])) {
             //Set the countdown to 120 seconds.
             $_SESSION['countdown'] = 5400;
             //Store the timestamp of when the countdown began.
@@ -195,53 +205,77 @@ class ProductsController extends Controller
         $remainingSeconds = abs($_SESSION['countdown'] - $timeSince);
 
         //How many minutes are remaining?
-        $remainingMins = round((abs($_SESSION['countdown'] - $timeSince))/180);
+        $remainingMins = round((abs($_SESSION['countdown'] - $timeSince)) / 180);
 
         //How many seconds are remaining?
-        $remainingHours = round((abs($_SESSION['countdown'] - $timeSince))/7200);
+        $remainingHours = round((abs($_SESSION['countdown'] - $timeSince)) / 7200);
 
         //Print out the countdow
         // echo "$remainingHours hour $remainingMins minutes remaining for checkout ";
 
         //Check if the countdown has finished.
-        if($remainingSeconds < 1)
-        {
+        if ($remainingSeconds < 1) {
             //Finished! Do something.
             // echo "Purchase Time Limit exceeded";
             /**
              * Unlock all items in cart
              */
-        }
-        else
-        {
-            
-            $carts = Cart::all();
-            $subtotal = Cart::sum('price');
-            // $total_items = Cart::count('name');
-            $ip = $request->ip();
-        
-            $extra = [
-                "subtotal" => $subtotal,
-                // "items" => $total_items
-            ];
+        } else {
+            $result = checkTier();
 
-            $first = collect(["cart" => $carts]);
-            $second = collect($extra);
-            
-            foreach($carts as $data)
-            { 
-                $currentUser = $data->session;
+            if ($result['id'] == 1) {
+                $carts = Cart::all();
+                $subtotal = Cart::sum('price');
+                // $total_items = Cart::count('name');
+                $ip = $request->ip();
 
-                if($currentUser == $ip)
-                {
-                    $merged = $first->merge($second);
-                    return $merged->toArray();
+                $extra = [
+                    "subtotal" => $subtotal,
+                    // "items" => $total_items
+                ];
+
+                $first = collect(["cart" => $carts]);
+                $second = collect($extra);
+
+                foreach ($carts as $data) {
+                    $currentUser = $data->session;
+
+                    if ($currentUser == $ip) {
+                        $merged = $first->merge($second);
+                        return $merged->toArray();
+                    } else {
+                        return ["Guest user not found"];
+                    }
                 }
-                else
-                {
-                    return["Guest user not found"];
-                }
+            } //End of nested IF
+            else if ($result['id'] == 0) {
+                return [
+                    "disableCheckout" => true, 
+                    "message" => $result['message']
+                ];
             }
         }
+    }
+
+
+
+    function showTier1()
+    {
+        $tier = Cart::all()->where('tier', 'Tier 1');
+        return count($tier);
+    }
+
+
+    function showTier2()
+    {
+        $tier = Cart::all()->where('tier', 'Tier 2');
+        return count($tier);
+    }
+
+
+    function showTier3()
+    {
+        $tier = Cart::all()->where('tier', 'Tier 3');
+        return count($tier);
     }
 }

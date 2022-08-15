@@ -60,6 +60,7 @@ class ProductsController extends Controller
         $product->locked = $request->locked;
         $product->received = $request->received;
         $product->batch = $request->batch;
+        $product->quantity = $request->quantity;
         $product->arrival_date = $request->arrival_date;
 
         $result = $product->save();
@@ -87,18 +88,44 @@ class ProductsController extends Controller
             ->select()
             ->where('item_category', $category)->get();
 
+        
         foreach ($query as $record) {
-            $this->item[] = [
-                'id' => $record->id,
-                'item' => $record->item_name,
-                'brand' => $record->brand,
-                'image_path' => $record->main_images_path,
-                'price' => $record->price,
-                'color' => $record->color,
-                'tier' => $record->tier,
-                'category' => $record->item_category,
-                'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
-            ];
+            
+
+            //Pre Order Stock
+            if($record->received == 0)
+                {
+                    $this->item[] = [
+                        'id' => $record->id,
+                        'item' => $record->item_name,
+                        'brand' => $record->brand,
+                        'image_path' => $record->main_images_path,
+                        'price' => $record->price,
+                        'color' => $record->color,
+                        'tier' => $record->tier,
+                        'category' => $record->item_category,
+                        'received' => $record->received,
+                        'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
+                    ];
+                    return[$this->item];
+                }
+            else if($record->received == 1)
+            {
+                $this->item[] = [
+                    'id' => $record->id,
+                    'item' => $record->item_name,
+                    'brand' => $record->brand,
+                    'image_path' => $record->main_images_path,
+                    'price' => $record->price,
+                    'color' => $record->color,
+                    'tier' => $record->tier,
+                    'category' => $record->item_category,
+                    'received' => $record->received,
+                    'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
+                ];
+                return[$this->item];
+            }
+        
 
             // if($record->second_images_path != null)
             // {
@@ -113,9 +140,11 @@ class ProductsController extends Controller
             //     ];
             // }
         }
+        
 
-        return [$this->item];
     }
+
+    
 
     function checkItemLock($status)
     {

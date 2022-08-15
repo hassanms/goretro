@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CurrentStock;
 use Illuminate\Http\Request;
 use App\Models\PreOrder;
+use App\Models\Products;
 use Illuminate\Support\Facades\DB;
 
 function getViews($category)
@@ -33,17 +35,15 @@ class PreOrderController extends Controller
     {
         $new_data = [];
         $data = PreOrder::all();
-        
         foreach($data as $record)
         {
             $new_data[] = 
             [
                 'id' => $record->id,
                 'name' => $record->name,
-                'items_left' => $record->items_left,
                 'category' => $record->category,
                 'image' => $record->image,
-                'views' => getViews($record->category)
+                'items_left' => $record->items_left
             ];
         }
 
@@ -52,35 +52,7 @@ class PreOrderController extends Controller
 
     function addOrder(Request $request)
     {
-        $pre_order = new PreOrder();
-
-        foreach($request as $data)
-        {
-            $pre_order->supplier_name = $data->supplier_name;
-            $pre_order->supplier_address = $data->supplier_address;
-            $pre_order->status = $data->status;
-            $pre_order->batch = $data->batch;
-            $pre_order->due_date = $data->due_date;
-            $pre_order->item_category = $data->item_category;
-            $pre_order->item_name = $data->item_name;
-            $pre_order->brand = $data->brand;
-            $pre_order->color = $data->color;
-            $pre_order->main_images_path = $data->main_image;
-            $pre_order->second_images_path = $data->secondary_image;
-            $pre_order->price = $data->price;
-            $pre_order->tier = $data->tier;
-        }
-
-        $result = $pre_order->save();
-
-        if($result)
-        {
-            return["Order addedd successfully"];
-        }
-        else
-        {
-            return["Operation failed"];
-        }
+        
     }
 
     function filterByBatch($batch)
@@ -90,7 +62,7 @@ class PreOrderController extends Controller
         $batch3 = [];
         $batch4 = [];
         
-        $pre_order = DB::table('pre-orders')
+        $pre_order = DB::table('products')
         ->select()
         ->where('batch', $batch)->get();
 
@@ -99,76 +71,28 @@ class PreOrderController extends Controller
            if($data->batch == 'Batch 1')
            {
             $batch1 = [
-                'supplier_name' => $data->supplier_name,
-                'supplier_address' => $data->supplier_address,
-                'status' => $data->status,
-                'due_date' => $data->due_date,
-                'item_category' => $data->item_category,
-                'item_name' => $data->item_name,
-                'brand' => $data->brand,
-                'color' => $data->color,
-                'main_images_path' => $data->main_images_path,
-                'second_images_path' => $data->second_images_path,
-                'price' => $data->price,
-                'shopping_cart' => $data->shopping_cart,
-                'tier' => $data->tier,
+                
             ];
            }
            
            else if($data->batch == 'Batch 2')
            {
             $batch2 = [
-                'supplier_name' => $data->supplier_name,
-                'supplier_address' => $data->supplier_address,
-                'status' => $data->status,
-                'due_date' => $data->due_date,
-                'item_category' => $data->item_category,
-                'item_name' => $data->item_name,
-                'brand' => $data->brand,
-                'color' => $data->color,
-                'main_images_path' => $data->main_images_path,
-                'second_images_path' => $data->second_images_path,
-                'price' => $data->price,
-                'shopping_cart' => $data->shopping_cart,
-                'tier' => $data->tier,
+               
             ];
            }
            
            else if($data->batch == 'Batch 3')
            {
             $batch3 = [
-                'supplier_name' => $data->supplier_name,
-                'supplier_address' => $data->supplier_address,
-                'status' => $data->status,
-                'due_date' => $data->due_date,
-                'item_category' => $data->item_category,
-                'item_name' => $data->item_name,
-                'brand' => $data->brand,
-                'color' => $data->color,
-                'main_images_path' => $data->main_images_path,
-                'second_images_path' => $data->second_images_path,
-                'price' => $data->price,
-                'shopping_cart' => $data->shopping_cart,
-                'tier' => $data->tier,
+               
             ];
            }
 
            else if($data->batch == 'Batch 4')
            {
-            $batch3 = [
-                'supplier_name' => $data->supplier_name,
-                'supplier_address' => $data->supplier_address,
-                'status' => $data->status,
-                'due_date' => $data->due_date,
-                'item_category' => $data->item_category,
-                'item_name' => $data->item_name,
-                'brand' => $data->brand,
-                'color' => $data->color,
-                'main_images_path' => $data->main_images_path,
-                'second_images_path' => $data->second_images_path,
-                'price' => $data->price,
-                'shopping_cart' => $data->shopping_cart,
-                'tier' => $data->tier,
+            $batch4 = [
+                
             ];
            }
         }

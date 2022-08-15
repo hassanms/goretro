@@ -28,6 +28,7 @@ class Products extends Model
         'locked',
         'received',
         'batch',
+        'quantity',
         'arrival_date'
     ];
 }

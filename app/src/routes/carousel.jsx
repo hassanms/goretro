@@ -5,13 +5,16 @@ import "tw-elements";
 
 export default function Carousel() {
   const [items, setItems] = useState([]);
+  const [index, setIndex] = useState(0);
   const [cart, setCart] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`http://127.0.0.1:8000/api/carousel/${searchParams.get("category")}`)
-      .then(res => { setItems(res.data[0][0]) })
+      .then(res => {
+        setItems(res.data[0]) 
+      })
   }, [])
 
   const handleInput = (name, category, price, tier, status = "complete") => {
@@ -41,18 +44,25 @@ export default function Carousel() {
 
   }
 
+  const removeItem = (itemId, remove) => {
+    if(remove) {
+      items.filter(item => item.id !== itemId)
+    }
+    setIndex(prev => prev + 1)
+  }
+
 
   return (
     <main>
       {
-        items ?
+        items[index] ?
         <>
           <div class="mt-6 max-w-2xl mx-auto sm:px-6 lg:max-w-7xl lg:px-8 lg:grid lg:grid-cols-3 lg:gap-x-8">
             {/* First Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
-              <a href={items.image_path} target="__blank" rel="noreferrer">
+              <a href={items[index].image_path} target="__blank" rel="noreferrer">
                 <img
-                  src={items.image_path}
+                  src={items[index].image_path}
                   alt="First card"
                   class="w-full h-full object-center object-cover"
                 ></img>
@@ -61,9 +71,9 @@ export default function Carousel() {
   
             {/* Second Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
-              <a href={items.image_path} target="__blank" rel="noreferrer">
+              <a href={items[index].image_path} target="__blank" rel="noreferrer">
                 <img
-                  src={items.image_path}
+                  src={items[index].image_path}
                   alt="First card"
                   class="w-full h-full object-center object-cover"
                 ></img>
@@ -72,9 +82,9 @@ export default function Carousel() {
   
             {/* Third Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
-              <a href={items.image_path} target="__blank" rel="noreferrer">
+              <a href={items[index].image_path} target="__blank" rel="noreferrer">
                 <img
-                  src={items.image_path}
+                  src={items[index].image_path}
                   alt="First card"
                   class="w-full h-full object-center object-cover"
                 ></img>
@@ -85,20 +95,20 @@ export default function Carousel() {
           <div class="max-w-2xl mx-auto pt-10 pb-16 px-4 sm:px-6 lg:max-w-7xl lg:pt-16 lg:pb-24 lg:px-8 lg:grid lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8">
             <div class="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
               <h1 class="text-2xl font-bold tracking-tight text-blue-900 sm:tracking-tight sm:text-3xl">
-                {items.item}
+                {items[index].item}
               </h1>
   
               <h4 class="text-sm font-regular tracking-tight text-blue-900 sm:tracking-tight sm:text-sm">
-                Brand: {items.brand}
+                Brand: {items[index].brand}
               </h4>
               <h4 class="text-sm font-regular tracking-tight text-blue-900 sm:tracking-tight sm:text-sm">
-                Color: {items.color}
+                Color: {items[index].color}
               </h4>
             </div>
   
             <div class="mt-4 lg:mt-0 lg:row-span-3">
               <h2 class="sr-only">Product information</h2>
-              <p class="tracking-tight text-3xl text-gray-900">£{items.price}</p>
+              <p class="tracking-tight text-3xl text-gray-900">£{items[index].price}</p>
   
               <div class="mt-6">
                 <h3 class="sr-only">Reviews</h3>
@@ -174,18 +184,18 @@ export default function Carousel() {
                   <div class="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4">
                     <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:bg-green-500 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-900 cursor-pointer">
                       <button
-                        onClick={() => handleInput(items.item, items.category, items.price, items.tier)}
+                        onClick={() => handleInput(items[index].item, items[index].category, items[index].price, items[index].tier)}
                       >
                         YES
                       </button>
                     </label>
   
                     <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:bg-blue-300 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-900 cursor-pointer">
-                      <button>MAYBE</button>
+                      <button onClick={() => removeItem(items[index].id, false)}>MAYBE</button>
                     </label>
   
                     <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:bg-red-500 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-900 cursor-pointer">
-                      <button>NO</button>
+                      <button onClick={() => removeItem(items[index].id, true)}>NO</button>
                     </label>
                   </div>
                 </fieldset>

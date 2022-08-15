@@ -42,3 +42,5 @@ Route::get("/pre-order/filter/{batch}", [PreOrderController::class, "filterByBat
 
 
 Route::post("/pre-order", [PreOrderController::class, "addOrder"]);
+
+Route::post("/stripe-checkout", [StripeController::class, "processStripe"]);

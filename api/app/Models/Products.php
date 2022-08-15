@@ -25,7 +25,10 @@ class Products extends Model
         'price',
         'shopping_cart',
         'tier',
-        'locked'
+        'locked',
+        'received',
+        'batch',
+        'arrival_date'
     ];
 }
 

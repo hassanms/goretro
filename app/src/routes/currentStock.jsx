@@ -32,7 +32,7 @@ export default function CurrentStock() {
                                     <h3 class="mt-5 text-center text-base font-semibold text-gray-900">
                                         {stock.name}
                                     </h3>
-                                    <span class="absolute inset-0 p-2">
+                                    <span class="font-bold text-indigo-900 absolute inset-0 p-2">
                                         {`${stock.views} people are viewing`}
                                     </span>
                                     <h3 class="text-center text-base text-gray-500">

@@ -16,7 +16,7 @@ function getViews($category)
 
     else if($category === 'average')
     {
-        return rand(0,3);
+        return rand(1,3);
     }
 
     else if($category === 'common')

@@ -38,6 +38,9 @@ class ProductsController extends Controller
         $product->price = $request->price;
         $product->tier = $request->tier;
         $product->locked = $request->locked;
+        $product->received = $request->received;
+        $product->batch = $request->batch;
+        $product->arrival_date = $request->arrival_date;
 
         $result = $product->save();
 
@@ -70,6 +73,7 @@ class ProductsController extends Controller
         foreach($query as $record)
         {
             $this->item[] = [
+                'id' => $record->id,
                 'item' => $record->item_name,
                 'brand' => $record->brand,
                 'image_path' => $record->main_images_path,

@@ -6,18 +6,24 @@ import "tw-elements";
 export default function Cart()
 {
      const cartObj = JSON.parse(localStorage.getItem("cart"))
-     const totalItems = cartObj.length
+     const totalItems = cartObj.cart.length
      const subTotal = cartObj.subtotal
      const navigate = useNavigate();
 
-     const [items, setItems] = useState([])
+     const stripeCheckout = () => {
+        const payload = {
+          "cart": cartObj.cart, 
+          "subTotal": subTotal
+        }
 
-     const stripeCheckout = (name, price) => {
-        const payload = {name, price, totalItems, subTotal}
-        axios.post('',payload).
-        then(res =>{})
+        axios.post('http://127.0.0.1:8000/api/stripe-checkout', payload).
+        then(res =>{
+          
         //Navigate to stripe checkout link
-        .catch(error => {})
+        window.location.replace(res.data[0])
+
+        })
+        .catch(error => {console.log("Checkout Incomplete")})
      }
     
     
@@ -47,8 +53,8 @@ export default function Cart()
               </div>
 
           {/* //Start of Cart Object */}
-          {cartObj.cart.map((item) => (
-              <div class="mt-8">
+          {cartObj.cart.map((item, index) => (
+              <div class="mt-8" key={index}>
                 <div class="flow-root">
                   <ul role="list" class="-my-6 divide-y divide-gray-200">
                     <li class="flex py-6">
@@ -92,7 +98,7 @@ export default function Cart()
               </div>
               <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
               <div class="mt-6">
-                <button onClick={stripeCheckout()} class="flex items-center justify-center rounded-md border border-transparent bg-gray-400 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700">Checkout</button>
+                <button onClick={() => stripeCheckout()} class="flex items-center justify-center rounded-md border border-transparent bg-gray-400 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700">Checkout</button>
               </div>
               <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
                 <p>

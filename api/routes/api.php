@@ -47,6 +47,6 @@ Route::get("/pre-order", [PreOrderController::class, "preOrders"]);
 Route::get("/pre-order/filter/{batch}", [PreOrderController::class, "filterByBatch"]);
 
 
-Route::post("/pre-order", [PreOrderController::class, "addOrder"]);
+Route::get("/pre-order/{category}", [PreOrderController::class, "preOrderCart"]);
 
 Route::post("/stripe-checkout", [StripeController::class, "processStripe"]);

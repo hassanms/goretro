@@ -91,25 +91,7 @@ class ProductsController extends Controller
         
         foreach ($query as $record) {
             
-
-            //Pre Order Stock
-            if($record->received == 0)
-                {
-                    $this->item[] = [
-                        'id' => $record->id,
-                        'item' => $record->item_name,
-                        'brand' => $record->brand,
-                        'image_path' => $record->main_images_path,
-                        'price' => $record->price,
-                        'color' => $record->color,
-                        'tier' => $record->tier,
-                        'category' => $record->item_category,
-                        'received' => $record->received,
-                        'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
-                    ];
-                    return[$this->item];
-                }
-            else if($record->received == 1)
+            if($record->received == 1)
             {
                 $this->item[] = [
                     'id' => $record->id,

@@ -50,9 +50,39 @@ class PreOrderController extends Controller
         return $new_data;
     }
 
-    function addOrder(Request $request)
+    function preOrderCart($category)
     {
+         /**
+         * This api will display products in carousel by category
+         */
+
+        $query = DB::table('products')
+            ->select()
+            ->where('item_category', $category)->get();
+
         
+        foreach ($query as $record) {
+            
+
+            //Pre Order Stock
+            if($record->received == 0)
+                {
+                    $this->item[] = [
+                        'id' => $record->id,
+                        'item' => $record->item_name,
+                        'brand' => $record->brand,
+                        'image_path' => $record->main_images_path,
+                        'price' => $record->price,
+                        'color' => $record->color,
+                        'tier' => $record->tier,
+                        'category' => $record->item_category,
+                        'received' => $record->received,
+                        'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
+                    ];
+                    return[$this->item];
+                }
+
+        }
     }
 
     function filterByBatch($batch)

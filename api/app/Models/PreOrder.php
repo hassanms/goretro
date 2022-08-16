@@ -12,19 +12,9 @@ class PreOrder extends Model
     protected $table = 'pre_orders';
 
     protected $fillable = [
-        'supplier_name',
-        'supplier_address',
-        'status',
-        'batch',
-        'due_date',
-        'item_category',
-        'item_name',
-        'brand',
-        'color',
-        'main_images_path',
-        'second_images_path',
-        'price',
-        'shopping_cart',
-        'tier',
+        'name',
+        'items_left',
+        'category',
+        'image'
     ];
 }

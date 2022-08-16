@@ -93,7 +93,7 @@ class StripeController extends Controller
                   ]);
 
         /** Empty Guest Cart */
-        Cart::truncate();
+        DB::table('carts')->truncate();
 
         return[$paymentLink->url];
         /**

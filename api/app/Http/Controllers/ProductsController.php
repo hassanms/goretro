@@ -60,6 +60,7 @@ class ProductsController extends Controller
         $product->locked = $request->locked;
         $product->received = $request->received;
         $product->batch = $request->batch;
+        $product->quantity = $request->quantity;
         $product->arrival_date = $request->arrival_date;
 
         $result = $product->save();
@@ -85,37 +86,61 @@ class ProductsController extends Controller
 
         $query = DB::table('products')
             ->select()
-            ->where('item_category', $category)->get();
+            ->where('item_category', $category)
+            ->where('received', 1)
+            ->get();
 
-        foreach ($query as $record) {
-            $this->item[] = [
-                'id' => $record->id,
-                'item' => $record->item_name,
-                'brand' => $record->brand,
-                'image_path' => $record->main_images_path,
-                'price' => $record->price,
-                'color' => $record->color,
-                'tier' => $record->tier,
-                'category' => $record->item_category,
-                'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
-            ];
+        $preOrder = DB::table('products')
+            ->select()
+            ->where('item_category', $category)
+            ->where('received', 0)
+            ->get();
 
-            // if($record->second_images_path != null)
-            // {
-            //     $this->item[] = [
-            //         'damage_image_path' => $record->second_images_path
-            //     ];
-            // }
-            // else
-            // {
-            //     $this->item[] = [
-            //         'damage_image_path' => "null"
-            //     ];
-            // }
+        if(count($query) > 0)
+        {
+            foreach ($query as $record) 
+        {
+            
+                $this->item[] = [
+                    'id' => $record->id,
+                    'item' => $record->item_name,
+                    'brand' => $record->brand,
+                    'image_path' => $record->main_images_path,
+                    'price' => $record->price,
+                    'color' => $record->color,
+                    'tier' => $record->tier,
+                    'category' => $record->item_category,
+                    'received' => $record->received,
+                    'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
+                ];
         }
+        return[$this->item, "Current Stock"];
+        
+        }
+        else
+        {
+                 foreach ($preOrder as $record) 
+            {
+                
+                    $this->item[] = [
+                        'id' => $record->id,
+                        'item' => $record->item_name,
+                        'brand' => $record->brand,
+                        'image_path' => $record->main_images_path,
+                        'price' => $record->price,
+                        'color' => $record->color,
+                        'tier' => $record->tier,
+                        'category' => $record->item_category,
+                        'received' => $record->received,
+                        'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
+                    ];
+            }         
+            return[$this->item, "Pre Order"];    
+        }      
 
-        return [$this->item];
     }
+
+    
 
     function checkItemLock($status)
     {

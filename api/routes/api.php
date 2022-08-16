@@ -44,9 +44,6 @@ Route::get("/carousel//checkout", [ProductsController::class, "checkoutCart"]);
 
 //Pre Order Routes
 Route::get("/pre-order", [PreOrderController::class, "preOrders"]);
-Route::get("/pre-order/filter/{batch}", [PreOrderController::class, "filterByBatch"]);
-
-
-Route::post("/pre-order", [PreOrderController::class, "addOrder"]);
+Route::post("/pre-order/batch", [PreOrderController::class, "filterByBatch"]);
 
 Route::post("/stripe-checkout", [StripeController::class, "processStripe"]);

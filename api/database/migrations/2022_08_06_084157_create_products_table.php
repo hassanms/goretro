@@ -27,6 +27,7 @@ return new class extends Migration
             $table->boolean('locked');
             $table->boolean('received');
             $table->integer('batch');
+            $table->integer('quantity');
             $table->date('arrival_date');
             
             $table->timestamps();

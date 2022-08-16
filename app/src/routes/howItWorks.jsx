@@ -2,13 +2,13 @@ export default function HowItWorks() {
     return (
         <main class="flex items-center flex-col justify-center p-10">
             <div class="flex items-center justify-center">
-                <iframe 
-                    width="700" 
-                    height="375" 
-                    src="https://www.youtube.com/embed/MSevAi_YarQ" 
-                    title="YouTube video player" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                <iframe
+                    width="700"
+                    height="375"
+                    src="https://www.youtube.com/embed/MSevAi_YarQ"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen
                 >
                 </iframe>

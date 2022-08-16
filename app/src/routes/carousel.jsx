@@ -4,6 +4,8 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import "tw-elements";
 
 export default function Carousel() {
+  const preOrders = JSON.parse(localStorage.getItem("preOrder"))
+  const[preOrderCart, setPreOrderCart] = useState([])
   const [items, setItems] = useState([]);
   const [index, setIndex] = useState(0);
   const [cart, setCart] = useState([]);
@@ -17,8 +19,7 @@ export default function Carousel() {
   useEffect(() => {
     axios.get(`http://127.0.0.1:8000/api/carousel/${searchParams.get("category")}`)
       .then(res => {
-        setItems(res.data[0])
-        console.log(res.data[0]) 
+        setItems(res.data[0]) 
       })
 
     // fetch the cart details
@@ -38,21 +39,6 @@ export default function Carousel() {
       });
   }, [])
 
-  // useEffect(() => {
-  //   const cart = JSON.parse(localStorage.getItem("cart"));
-  //   const newItems = []
-  //   if(cart) {
-  //     items.map((item) => {
-  //       if(cart.cart.filter(c => c.name === item.item)) {
-          
-  //       } else {
-  //         newItems.push(item)
-  //       }
-  //     })
-  //     setItems(newItems)
-  //   }
-  // }, [cart])
-
   const handleInput = (name, category, price, tier, status = "complete") => {
     // refresh whichTier
     setWhichTier(0)
@@ -70,12 +56,12 @@ export default function Carousel() {
   }
 
   const viewCart = () => {
-    localStorage.setItem("cart", {});
     axios.get('http://127.0.0.1:8000/api/carousel//checkout')
       .then(res => {
         //Proceed to checkout
         navigate("/cart")
         setCart(res.data)
+        localStorage.setItem("cart", JSON.stringify(res.data));
         setDisableCheckout(res.data.disableCheckout)
       })
       .catch(error => {
@@ -101,7 +87,6 @@ export default function Carousel() {
       .then(res => {
         setTierMessage(res.data + " items are in Tier 1")
         setWhichTier(1)
-        console.log(res.data+" items are in Tier 1")
       })
       .catch(error => {
         console.log("cart is empty")
@@ -113,7 +98,6 @@ export default function Carousel() {
       .then(res => {
         setTierMessage(res.data + " items are in Tier 2")
         setWhichTier(2)
-        console.log(res.data+" items are in Tier 2")
       })
       .catch(error => {
         console.log("cart is empty")
@@ -125,7 +109,6 @@ export default function Carousel() {
       .then(res => {
         setTierMessage(res.data + " items are in Tier 3")
         setWhichTier(3)
-        console.log(res.data+" items are in Tier 3")
       })
       .catch(error => {
         console.log("cart is empty")

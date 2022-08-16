@@ -10,15 +10,16 @@ export default function Carousel() {
   const [tierMessage, setTierMessage] = useState("");
   const [whichTier, setWhichTier] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParamss, setSearchParamss] = useSearchParams();
   const [disableCheckout, setDisableCheckout] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`http://127.0.0.1:8000/api/carousel/${searchParams.get("category")}`)
       .then(res => {
-        setItems(res.data[0]) 
+        setItems(res.data[0])
+        console.log(res.data[0]) 
       })
-
 
     // fetch the cart details
     axios
@@ -75,10 +76,7 @@ export default function Carousel() {
         //Proceed to checkout
         navigate("/cart")
         setCart(res.data)
-        // setDisableCheckout(res.data.disableCheckout)
-        if(res.data.disableCheckout === true || res.data.disableCheckout === false) {
-          localStorage.setItem("cart", JSON.stringify(res.data))
-        }
+        setDisableCheckout(res.data.disableCheckout)
       })
       .catch(error => {
         alert(error.data)
@@ -141,7 +139,7 @@ export default function Carousel() {
   return (
     <main>
       {
-        items[index] ?
+        items[index] ? 
         <>
           <div class="mt-6 max-w-2xl mx-auto sm:px-6 lg:max-w-7xl lg:px-8 lg:grid lg:grid-cols-3 lg:gap-x-8">
             {/* First Card  */}
@@ -290,7 +288,6 @@ export default function Carousel() {
               <button
                 class="mt-10 w-full bg-yellow-500 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 onClick={() => !disableCheckout && viewCart()}
-                // disbaled={disableCheckout.toString()}
               >
                 View Cart
               </button>

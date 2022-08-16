@@ -50,98 +50,33 @@ class PreOrderController extends Controller
         return $new_data;
     }
 
-    function preOrderCart($category)
-    {
-         /**
-         * This api will display products in carousel by category
-         */
-
-        $query = DB::table('products')
-            ->select()
-            ->where('item_category', $category)->get();
-
-        
-        foreach ($query as $record) {
-            
-
-            //Pre Order Stock
-            if($record->received == 0)
-                {
-                    $this->item[] = [
-                        'id' => $record->id,
-                        'item' => $record->item_name,
-                        'brand' => $record->brand,
-                        'image_path' => $record->main_images_path,
-                        'price' => $record->price,
-                        'color' => $record->color,
-                        'tier' => $record->tier,
-                        'category' => $record->item_category,
-                        'received' => $record->received,
-                        'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
-                    ];
-                    return[$this->item];
-                }
-
-        }
-    }
-
-    function filterByBatch($batch)
+    function filterByBatch(Request $request)
     {
         $batch1 = [];
         $batch2 = [];
         $batch3 = [];
         $batch4 = [];
         
-        $pre_order = DB::table('products')
-        ->select()
-        ->where('batch', $batch)->get();
+        if($request->batch == 'Batch 1')
+        {
+            $preOrders = DB::table('products')
+            ->select()
+            ->where('received', 0)->get();
 
-        foreach($pre_order as $data)
-        {
-           if($data->batch == 'Batch 1')
-           {
-            $batch1 = [
-                
-            ];
-           }
-           
-           else if($data->batch == 'Batch 2')
-           {
-            $batch2 = [
-               
-            ];
-           }
-           
-           else if($data->batch == 'Batch 3')
-           {
-            $batch3 = [
-               
-            ];
-           }
-
-           else if($data->batch == 'Batch 4')
-           {
-            $batch4 = [
-                
-            ];
-           }
+            return[$preOrders];
         }
-
-        if(count($batch1) > 1)
+        else if($request->batch == 'Batch 2')
         {
-            return[$batch1, "Batch arriving soonest"];
+            return["Batch 2 OK"];
         }
-        else if(count($batch2) > 1)
+        else if($request->batch == 'Batch 3')
         {
-            return[$batch2, "Batch arriving second"];
+            return["Batch 3 OK"];           
         }
-        else if(count($batch3) > 1)
+        else if($request->batch == 'Batch 4')
         {
-            return[$batch3, "Batch arriving third"];
+            return["Batch 4 OK"];           
         }
-        else if(count($batch4) > 1)
-        {
-            return[$batch4, "Batch arriving fourth"];
-        }
+       
     }
 }

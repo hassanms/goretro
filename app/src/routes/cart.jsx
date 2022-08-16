@@ -16,7 +16,7 @@ export default function Cart()
           "subTotal": subTotal
         }
 
-        axios.post('http://127.0.0.1:8000/api/stripe-checkout', payload).
+        axios.post('http://glacial-beach-87404.herokuapp.com/api/stripe-checkout', payload).
         then(res =>{
           
         //Navigate to stripe checkout link

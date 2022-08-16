@@ -5,7 +5,7 @@ export default function PreOrder() {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:8000/api/pre-order`)
+        axios.get(`http://glacial-beach-87404.herokuapp.com/api/pre-order`)
         .then(res => { setItems(res.data) })
     }, [])
 

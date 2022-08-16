@@ -5,7 +5,7 @@ export default function CurrentStock() {
     const [stocks, setStocks] = useState([]);
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:8000/api/currentStock`)
+        axios.get(`http://glacial-beach-87404.herokuapp.com/api/currentStock`)
         .then(res => { setStocks(res.data) })
     }, [])
     

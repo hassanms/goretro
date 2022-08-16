@@ -14,7 +14,7 @@ export default function Carousel() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://127.0.0.1:8000/api/carousel/${searchParams.get("category")}`)
+    axios.get(`http://glacial-beach-87404.herokuapp.com/api/carousel/${searchParams.get("category")}`)
       .then(res => {
         setItems(res.data[0]) 
       })
@@ -22,7 +22,7 @@ export default function Carousel() {
 
     // fetch the cart details
     axios
-      .get("http://127.0.0.1:8000/api/carousel//checkout")
+      .get("http://glacial-beach-87404.herokuapp.com/api/carousel//checkout")
       .then((res) => {
         //Proceed to checkout
         // navigate("/cart");
@@ -33,7 +33,7 @@ export default function Carousel() {
         }
       })
       .catch((error) => {
-        alert(error.data);
+        // alert(error);
       });
   }, [])
 
@@ -58,7 +58,7 @@ export default function Carousel() {
     const payload = {
       name, category, price, tier, status
     }
-    axios.post('http://127.0.0.1:8000/api/carousel/cart', payload)
+    axios.post('http://glacial-beach-87404.herokuapp.com/api/carousel/cart', payload)
       .then(res => {
         console.log("Added successfully")
         setIndex(prev => prev + 1)
@@ -70,7 +70,7 @@ export default function Carousel() {
 
   const viewCart = () => {
     localStorage.setItem("cart", {});
-    axios.get('http://127.0.0.1:8000/api/carousel//checkout')
+    axios.get('http://glacial-beach-87404.herokuapp.com/api/carousel//checkout')
       .then(res => {
         //Proceed to checkout
         navigate("/cart")
@@ -81,7 +81,7 @@ export default function Carousel() {
         }
       })
       .catch(error => {
-        alert(error.data)
+        // alert(error)
       })
 
   }
@@ -99,7 +99,7 @@ export default function Carousel() {
 
     if(tier == "Tier 1")
     {
-      axios.get('http://127.0.0.1:8000/api/carousel//show-tier-1')
+      axios.get('http://glacial-beach-87404.herokuapp.com/api/carousel//show-tier-1')
       .then(res => {
         setTierMessage(res.data + " items are in Tier 1")
         setWhichTier(1)
@@ -111,7 +111,7 @@ export default function Carousel() {
     }
     else if(tier == "Tier 2")
     {
-      axios.get('http://127.0.0.1:8000/api/carousel//show-tier-2')
+      axios.get('http://glacial-beach-87404.herokuapp.com/api/carousel//show-tier-2')
       .then(res => {
         setTierMessage(res.data + " items are in Tier 2")
         setWhichTier(2)
@@ -123,7 +123,7 @@ export default function Carousel() {
     }
     if(tier == "Tier 3")
     {
-      axios.get('http://127.0.0.1:8000/api/carousel//show-tier-3')
+      axios.get('http://glacial-beach-87404.herokuapp.com/api/carousel//show-tier-3')
       .then(res => {
         setTierMessage(res.data + " items are in Tier 3")
         setWhichTier(3)

@@ -16,6 +16,8 @@ class Cart extends Model
         'category',
         'price',
         'email',
-        'status'
+        'status',
+        'session',
+        'lock_item'
     ];
 }

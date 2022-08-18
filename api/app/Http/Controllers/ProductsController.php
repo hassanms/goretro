@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Stripe\Product;
 
 function checkTier()
 {
@@ -96,11 +97,9 @@ class ProductsController extends Controller
             ->where('received', 0)
             ->get();
 
-        if(count($query) > 0)
-        {
-            foreach ($query as $record) 
-        {
-            
+        if (count($query) > 0) {
+            foreach ($query as $record) {
+
                 $this->item[] = [
                     'id' => $record->id,
                     'item' => $record->item_name,
@@ -113,34 +112,29 @@ class ProductsController extends Controller
                     'received' => $record->received,
                     'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
                 ];
-        }
-        return[$this->item, "Current Stock"];
-        
-        }
-        else
-        {
-                 foreach ($preOrder as $record) 
-            {
-                
-                    $this->item[] = [
-                        'id' => $record->id,
-                        'item' => $record->item_name,
-                        'brand' => $record->brand,
-                        'image_path' => $record->main_images_path,
-                        'price' => $record->price,
-                        'color' => $record->color,
-                        'tier' => $record->tier,
-                        'category' => $record->item_category,
-                        'received' => $record->received,
-                        'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
-                    ];
-            }         
-            return[$this->item, "Pre Order"];    
-        }      
+            }
+            return [$this->item, "Current Stock"];
+        } else {
+            foreach ($preOrder as $record) {
 
+                $this->item[] = [
+                    'id' => $record->id,
+                    'item' => $record->item_name,
+                    'brand' => $record->brand,
+                    'image_path' => $record->main_images_path,
+                    'price' => $record->price,
+                    'color' => $record->color,
+                    'tier' => $record->tier,
+                    'category' => $record->item_category,
+                    'received' => $record->received,
+                    'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
+                ];
+            }
+            return [$this->item, "Pre Order"];
+        }
     }
 
-    
+
 
     function checkItemLock($status)
     {
@@ -169,13 +163,42 @@ class ProductsController extends Controller
         }
     }
 
+    function showDamage(Request $request)
+    {
+        $damageImage = DB::table('products')
+        ->select('second_images_path')
+        ->where('item_name', $request->name)
+        ->get();
+
+        if($damageImage[0]->second_images_path != null)
+        {       
+            return $damageImage[0]->second_images_path;
+        }
+        else
+        {
+            return "No damage in product";
+        }
+
+    }
+
     function addToCart(Request $request)
     {
 
         $sessionID = $request->ip();
 
+        $checkLock = DB::table('carts')
+        ->select('name')->get();
 
-
+        if($checkLock[0]->name == $request->name)
+        {
+            return [
+                "disableCheckout" => true,
+                "message" => "Item is already in other customer's cart"
+            ];
+        }
+        else
+        {
+        
         $cart = new Cart();
 
         $cart->name = $request->name;
@@ -184,18 +207,17 @@ class ProductsController extends Controller
         $cart->tier = $request->tier;
         $cart->status = $request->status;
         $cart->session = $sessionID;
+        $cart->lock_item = 1;
 
         $result = $cart->save();
-
-        /**
-         *  Checkout to Stripe
-         */
 
         if ($result) {
 
             return ['Result' => 'Cart updated successfully'];
         } else {
             return ['Result' => 'Operation Failed'];
+        }
+
         }
     }
 
@@ -275,7 +297,7 @@ class ProductsController extends Controller
             } //End of nested IF
             else if ($result['id'] == 0) {
                 return [
-                    "disableCheckout" => true, 
+                    "disableCheckout" => true,
                     "message" => $result['message']
                 ];
             }

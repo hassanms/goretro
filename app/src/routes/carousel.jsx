@@ -14,12 +14,15 @@ export default function Carousel() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchParamss, setSearchParamss] = useSearchParams();
   const [disableCheckout, setDisableCheckout] = useState(false);
+  const [damage, setDamage] = useState('hidden');
+  const [alertMessage, setAlertMessage] = useState('hidden');
   const navigate = useNavigate();
+ 
 
   useEffect(() => {
     axios.get(`http://127.0.0.1:8000/api/carousel/${searchParams.get("category")}`)
       .then(res => {
-        setItems(res.data[0]) 
+        setItems(res.data[0])
       })
 
     // fetch the cart details
@@ -45,10 +48,21 @@ export default function Carousel() {
     const payload = {
       name, category, price, tier, status
     }
-    axios.post('http://127.0.0.1:8000/api/carousel/cart', payload)
+    axios.post('http://127.0.0.1:8000/api/carousel//cart', payload)
       .then(res => {
-        console.log("Added successfully")
-        setIndex(prev => prev + 1)
+
+        if(res.data.disableCheckout === true)
+        {
+          setDisableCheckout(res.data.disableCheckout)
+          console.log(res.data.message)
+          setAlertMessage('visible')
+        }
+        else
+        {
+          console.log("Added successfully")
+          setIndex(prev => prev + 1)
+        }
+        
       })
       .catch(error => {
         console.log("/api/carousel/cart didn't work")
@@ -77,6 +91,18 @@ export default function Carousel() {
       items.filter(item => item.id !== itemId)
     }
     setIndex(prev => prev + 1)
+  }
+
+  const showDamage = (name) => {
+    const payload = {name}
+    axios.post('http://127.0.0.1:8000/api/carousel/damage', payload)
+      .then(res => {
+        if(res.data)
+        setDamage('visible')
+      })
+      .catch(error => {
+        alert(error.data)
+      })
   }
 
   const viewTier = (tier) => {
@@ -149,11 +175,12 @@ export default function Carousel() {
   
             {/* Third Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
-              <a href={items[index].image_path} target="__blank" rel="noreferrer">
+              <a href={items[index].damage_image_path} target="__blank" rel="noreferrer">
                 <img
-                  src={items[index].image_path}
+                  src={items[index].damage_image_path}
                   alt="First card"
                   class="w-full h-full object-center object-cover"
+                  style={{ visibility: damage }}
                 ></img>
               </a>
             </div>
@@ -248,14 +275,18 @@ export default function Carousel() {
                 </div>
   
                 <fieldset class="mt-4">
+                <div style={{ visibility: alertMessage }} class="bg-yellow-100 rounded-lg py-5 px-6 mb-4 text-base text-yellow-700 mb-3" role="alert">
+                            Item is in some other customer's cart
+                    </div>
                   <div class="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4">
                     <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:bg-green-500 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-900 cursor-pointer">
                       <button
-                        onClick={() => handleInput(items[index].item, items[index].category, items[index].price, items[index].tier)}
-                      >
+                        onClick={() => handleInput(items[index].item, items[index].category, items[index].price, items[index].tier)} >
                         YES
                       </button>
+                      
                     </label>
+                    
   
                     <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:bg-blue-300 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-900 cursor-pointer">
                       <button onClick={() => removeItem(items[index].id, false)}>MAYBE</button>
@@ -263,6 +294,10 @@ export default function Carousel() {
   
                     <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:bg-red-500 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-900 cursor-pointer">
                       <button onClick={() => removeItem(items[index].id, true)}>NO</button>
+                    </label>
+
+                    <label class="group relative border rounded-md py-3 px-4 flex items-center justify-center text-sm font-medium uppercase hover:text-gray-50 hover:bg-indigo-500 focus:outline-none sm:flex-1 sm:py-6 bg-white shadow-sm text-gray-1000 cursor-pointer">
+                      <button onClick={() => showDamage(items[index].item)} >Show Damage</button>
                     </label>
                   </div>
                 </fieldset>

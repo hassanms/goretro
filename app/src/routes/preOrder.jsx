@@ -13,24 +13,23 @@ export default function PreOrder() {
     axios.get(`http://127.0.0.1:8000/api/pre-order`).then((res) => {
       setItems(res.data);
     });
-
   }, []);
 
-   //Get batch by filter
-   const filterBatch = (batch) => {
-    const payload = {batch}
+  //Get batch by filter
+  const filterBatch = (batch) => {
+    const payload = { batch };
     axios
-    .post('http://127.0.0.1:8000/api/pre-order/batch', payload)
-    .then((res) => {
-      setBatch(res.data)
-      setItems(0)
-      localStorage.setItem("preOrder", JSON.stringify(res.data));
-    //   navigate(`/carousel?category=${res.data[0][0].item_category}`)
-    })
-    .catch((error) => {
-      console.log("Batch Not Found")
-    });
-}
+      .post("http://127.0.0.1:8000/api/pre-order/batch", payload)
+      .then((res) => {
+        setBatch(res.data);
+        setItems(0);
+        localStorage.setItem("preOrder", JSON.stringify(res.data));
+        //   navigate(`/carousel?category=${res.data[0][0].item_category}`)
+      })
+      .catch((error) => {
+        console.log("Batch Not Found");
+      });
+  };
 
   return (
     <main class="max-h-full">
@@ -107,7 +106,7 @@ export default function PreOrder() {
         "
                 aria-labelledby="dropdownMenuButton1"
               >
-                <li onClick={() => filterBatch('Batch 1')}>
+                <li onClick={() => filterBatch("Batch 1")}>
                   <a
                     class="
               dropdown-item
@@ -127,7 +126,7 @@ export default function PreOrder() {
                     Batch 1
                   </a>
                 </li>
-                <li onClick={() => filterBatch('Batch 2')}>
+                <li onClick={() => filterBatch("Batch 2")}>
                   <a
                     class="
               dropdown-item
@@ -147,7 +146,7 @@ export default function PreOrder() {
                     Batch 2
                   </a>
                 </li>
-                <li onClick={() => filterBatch('Batch 3')}>
+                <li onClick={() => filterBatch("Batch 3")}>
                   <a
                     class="
               dropdown-item
@@ -168,7 +167,7 @@ export default function PreOrder() {
                   </a>
                 </li>
 
-                <li onClick={() => filterBatch('Batch 4')}>
+                <li onClick={() => filterBatch("Batch 4")}>
                   <a
                     class="
               dropdown-item
@@ -201,65 +200,65 @@ export default function PreOrder() {
             Pre Order
           </h2>
           <div class="mt-6 space-y-12 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-6">
-            {items.length > 0 && (
-              items.map((item) => (
-                <div class="group relative mb-10">
-                  <div class="relative w-full bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
-                    <img
-                      src={item.image}
-                      alt="..."
-                      class="w-full h-full object-center object-cover"
-                    ></img>
-                  </div>
-                  <h3 class="mt-5 text-center text-lg font-semibold text-gray-900">
-                    {item.name}
-                  </h3>
+            {
+              items.length > 0 &&
+                items.map((item) => (
+                  <div class="group relative mb-10">
+                    <div class="relative w-full bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
+                      <img
+                        src={item.image}
+                        alt="..."
+                        class="w-full h-full object-center object-cover"
+                      ></img>
+                    </div>
+                    <h3 class="mt-5 text-center text-lg font-semibold text-gray-900">
+                      {item.name}
+                    </h3>
 
-                  <h3 class="text-center text-base text-gray-500">
-                    <a href={`/carousel?category=${item.name}`}>
-                      <span class="absolute inset-0"></span>
-                      {`${item.items_left} items in stock`}
-                    </a>
-                  </h3>
-                </div>
-              ))
-            )
-            //  : 
-            // (
-            //   <div>There are no items in the pre order</div>
-            // )
+                    <h3 class="text-center text-base text-gray-500">
+                      <a href={`/carousel?category=${item.name}`}>
+                        <span class="absolute inset-0"></span>
+                        {`${item.items_left} items in stock`}
+                      </a>
+                    </h3>
+                  </div>
+                ))
+              //  :
+              // (
+              //   <div>There are no items in the pre order</div>
+              // )
             }
           </div>
           {/* Pre Order Page Refresh */}
           {/** ====================================================================================================================== */}
           <div class="mt-6 space-y-12 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-6">
-            {batchItem.length > 0 && (
-              batchItem.map((data) => (
-                <div class="group relative mb-10">
-                  <div class="relative w-full bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
-                    <img
-                      src={data.main_images_path}
-                      alt="..."
-                      class="w-full h-full object-center object-cover"
-                    ></img>
-                  </div>
-                  <h3 class="mt-5 text-center text-lg font-semibold text-gray-900">
-                    {data.item_category}
-                  </h3>
+            {
+              batchItem.length > 0 &&
+                batchItem.map((data) => (
+                  <div class="group relative mb-10">
+                    <div class="relative w-full bg-white rounded-lg overflow-hidden group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-1 sm:h-64 lg:aspect-w-1 lg:aspect-h-1">
+                      <img
+                        src={data.main_images_path}
+                        alt="..."
+                        class="w-full h-full object-center object-cover"
+                      ></img>
+                    </div>
+                    <h3 class="mt-5 text-center text-lg font-semibold text-gray-900">
+                      {data.item_category}
+                    </h3>
 
-                  <h3 class="text-center text-base text-gray-500">
-                    <a href={`/carousel?category=${data.item_category}`}>
-                      <span class="absolute inset-0"></span>
-                      {`${data.quantity} items in stock`}
-                    </a>
-                  </h3>
-                </div>
-              ))
-            ) 
-            // : 
-            // (
-            //   <div>There are no items in the pre order</div>
-            // )
+                    <h3 class="text-center text-base text-gray-500">
+                      <a href={`/carousel?category=${data.item_category}`}>
+                        <span class="absolute inset-0"></span>
+                        {`${data.quantity} items in stock`}
+                      </a>
+                    </h3>
+                  </div>
+                ))
+              // :
+              // (
+              //   <div>There are no items in the pre order</div>
+              // )
             }
           </div>
           {/* End of Pre Order */}

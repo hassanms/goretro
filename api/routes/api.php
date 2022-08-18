@@ -39,7 +39,8 @@ Route::get("/carousel//show-tier-3", [ProductsController::class, "showTier3"]);
 
 //Post Routes
 Route::post("/carousel", [ProductsController::class, "addProduct"]);
-Route::post("/carousel/cart", [ProductsController::class, "addToCart"]);
+Route::post("/carousel//cart", [ProductsController::class, "addToCart"]);
+Route::post("/carousel/damage", [ProductsController::class, "showDamage"]);
 Route::get("/carousel//checkout", [ProductsController::class, "checkoutCart"]);
 
 //Pre Order Routes

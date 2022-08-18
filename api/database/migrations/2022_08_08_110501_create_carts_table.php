@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('tier');
             $table->string('status');
             $table->string('session');
+            $table->boolean('lock_item');
             $table->timestamps();
         });
     }

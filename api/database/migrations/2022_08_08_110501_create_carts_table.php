@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('status');
             $table->string('session');
             $table->boolean('lock_item');
+            $table->string('email');
             $table->timestamps();
         });
     }

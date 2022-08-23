@@ -4,32 +4,116 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Products;
+use Encore\Admin\Grid\Filter\Where;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Stripe\Product;
+
 
 function checkTier()
 {
     /**Iterate over current user cart */
-    $tier1 = Cart::all()->where('tier', 'Tier 1');
+    $tier1 = DB::table('carts')
+        ->select()
+        ->where('tier', 'Tier 1')->get();
+    $itemsTier1 = count($tier1);
 
-    if (count($tier1) <= 2) {
-        return [
-            "id" => 1,
-            "message" => "Proceed to checkout",
-            "disableCheckout" => false
-        ];
+    $tier2 = DB::table('carts')
+        ->select()
+        ->where('tier', 'Tier 2')->get();
+    $itemsTier2 = count($tier2);
+
+    $tier3 = DB::table('carts')
+        ->select()
+        ->where('tier', 'Tier 3')->get();
+    $itemsTier3 = count($tier3);
+
+    if ($itemsTier1 > 0 && $itemsTier2 == 0 && $itemsTier3 == 0) {
+        /**
+         * Here if a customer only purchase items from Tier 1,
+         * We will not let them checkout
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "You cannot purchase only Tier 1 Items",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 == 0 && $itemsTier2 == 0 && $itemsTier3 == 0) {
+        /**
+         * Cart is Empty
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "No items in cart",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 > 0 && $itemsTier2 > 0 && $itemsTier3 == 0) {
+        /**
+         * Customer can't only purchase itesm from two tier
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "You must purchase items from Tier 3",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 > 0 && $itemsTier2 == 0 && $itemsTier3 > 0) {
+        /**
+         * Customer can't only purchase itesm from two tier
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "You must purchase items from Tier 2",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 == 0 && $itemsTier2 > 0 && $itemsTier3 > 0) {
+        /**
+         * Customer can't only purchase itesm from two tier
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "You must purchase items from Tier 1",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 > 0 && $itemsTier2 == ($itemsTier1 * 2) && $itemsTier3 == ($itemsTier1 * 2)) {
+        /**
+         * Proceed to checkout
+         */
+        return response(
+            [
+                "Items" =>
+                [
+                    "Tier 1" => $tier1,
+                    "Tier 2" => $tier2,
+                    "Tier 3" => $tier3,
+                ],
+
+                //Return Items Count
+                "Items Count" =>
+                [
+                    "Tier 1 Count " => $itemsTier1,
+                    "Tier 2 Count " => $itemsTier2,
+                    "Tier 3 Count " => $itemsTier3,
+                ]
+            ],
+            200
+        );
     } else {
-        return [
-            "id" => 0,
-            "message" => "you must add " . count($tier1) * 2 . " items from Tier 2 & Tier 3 to proceed",
-            // "disableCheckout" => true
-        ];
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "Checkout conditions not met",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
     }
 }
 
 class ProductsController extends Controller
 {
+
     public $item = [];
     //
     function getAllProducts()
@@ -134,51 +218,18 @@ class ProductsController extends Controller
         }
     }
 
-
-
-    function checkItemLock($status)
-    {
-        /**
-         * This api will check that item is not in any customers cart
-         */
-
-        $locked = 0;
-        $query = DB::table('products')
-            ->select()
-            ->where('locked', $status)->get();
-
-        foreach ($query as $record) {
-            $this->item[] = [
-                'id: ' => $record->id,
-                'item' => $record->item_name,
-                'locked' => $record->locked,
-            ];
-            $locked = $record->locked;
-        }
-
-        if ($locked = $status) {
-            return [$this->item, "This item has been chosen by another customer and is in their cart. It will become available if they do not purchase within 1 hour"];
-        } else {
-            return [$this->item, "Item is unlocked please proceed to checkout."];
-        }
-    }
-
     function showDamage(Request $request)
     {
         $damageImage = DB::table('products')
-        ->select('second_images_path')
-        ->where('item_name', $request->name)
-        ->get();
+            ->select('second_images_path')
+            ->where('item_name', $request->name)
+            ->get();
 
-        if($damageImage[0]->second_images_path != null)
-        {       
+        if ($damageImage[0]->second_images_path != null) {
             return $damageImage[0]->second_images_path;
-        }
-        else
-        {
+        } else {
             return "No damage in product";
         }
-
     }
 
     function addToCart(Request $request)
@@ -187,18 +238,18 @@ class ProductsController extends Controller
         $sessionID = $request->ip();
 
         $checkLock = DB::table('carts')
-        ->select('name')->get();
+            ->select('lock_item')->where('name', $request->name)
+            ->get();
 
-        if($checkLock[0]->name == $request->name)
-        {
-            return [
-                "disableCheckout" => true,
-                "message" => "Item is already in other customer's cart"
-            ];
+        if (count($checkLock) > 0) {
+            if ($checkLock[0]->lock_item == 1) {
+                return [
+                    "disableCheckout" => true,
+                    "message" => "This item is already in other customer cart"
+                ];
+            }
         }
-        else
-        {
-        
+
         $cart = new Cart();
 
         $cart->name = $request->name;
@@ -206,6 +257,7 @@ class ProductsController extends Controller
         $cart->price = $request->price;
         $cart->tier = $request->tier;
         $cart->status = $request->status;
+        $cart->email = $request->email;
         $cart->session = $sessionID;
         $cart->lock_item = 1;
 
@@ -216,8 +268,6 @@ class ProductsController extends Controller
             return ['Result' => 'Cart updated successfully'];
         } else {
             return ['Result' => 'Operation Failed'];
-        }
-
         }
     }
 
@@ -267,40 +317,14 @@ class ProductsController extends Controller
             /**
              * Unlock all items in cart
              */
-        } else {
-            $result = checkTier();
-
-            if ($result['id'] == 1) {
-                $carts = Cart::all();
-                $subtotal = Cart::sum('price');
-                // $total_items = Cart::count('name');
-                $ip = $request->ip();
-
-                $extra = [
-                    "subtotal" => $subtotal,
-                    // "items" => $total_items
-                ];
-
-                $first = collect(["cart" => $carts]);
-                $second = collect($extra);
-
-                foreach ($carts as $data) {
-                    $currentUser = $data->session;
-
-                    if ($currentUser == $ip) {
-                        $merged = $first->merge($second);
-                        return $merged->toArray();
-                    } else {
-                        return ["Guest user not found"];
-                    }
-                }
-            } //End of nested IF
-            else if ($result['id'] == 0) {
-                return [
-                    "disableCheckout" => true,
-                    "message" => $result['message']
-                ];
+            $cart = DB::update('update carts set lock_item = 0');
+            if ($cart)
+                return "Timer Expired All items are now unlocked";
+            else {
+                return "Error in checkoutCart Function";
             }
+        } else {
+            return checkTier();
         }
     }
 
@@ -308,21 +332,30 @@ class ProductsController extends Controller
 
     function showTier1()
     {
-        $tier = Cart::all()->where('tier', 'Tier 1');
-        return count($tier);
+        $tier = DB::table('carts')
+            ->select()
+            ->where('tier', 'Tier 1')->get();
+        return [
+            "items" => $tier,
+            "count" => count($tier)
+        ];
     }
 
 
     function showTier2()
     {
-        $tier = Cart::all()->where('tier', 'Tier 2');
-        return count($tier);
+        $tier = DB::table('carts')
+            ->select()
+            ->where('tier', 'Tier 2')->get();
+        return ["items" => $tier, "count" => count($tier)];
     }
 
 
     function showTier3()
     {
-        $tier = Cart::all()->where('tier', 'Tier 3');
-        return count($tier);
+        $tier = DB::table('carts')
+            ->select()
+            ->where('tier', 'Tier 3')->get();
+        return ["items" => $tier, "count" => count($tier)];
     }
 }

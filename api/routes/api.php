@@ -29,7 +29,6 @@ Route::get("/getViews/{category}", [CurrentStockController::class, "getViews"]);
 Route::get("/carousel", [ProductsController::class, "getAllProducts"]);
 Route::get("/carousel/{category}", [ProductsController::class, "displayProductByCategory"]);
 Route::get("/carousel/tier", [ProductsController::class, "checkTier"]);
-Route::get("/carousel/status/{lockstatus}", [ProductsController::class, "checkItemLock"]);
 Route::get("/carousel//checkout", [ProductsController::class, "checkoutCart"]);
 
 //Show Tiers

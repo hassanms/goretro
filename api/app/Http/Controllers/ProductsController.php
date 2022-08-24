@@ -82,23 +82,10 @@ function checkTier()
         /**
          * Proceed to checkout
          */
-        return response(
-            [
-                "Items" =>
-                [
-                    "Tier 1" => $tier1,
-                    "Tier 2" => $tier2,
-                    "Tier 3" => $tier3,
-                ],
+        $cart = DB::table('carts')->select()->get();
 
-                //Return Items Count
-                "Items Count" =>
-                [
-                    "Tier 1 Count " => $itemsTier1,
-                    "Tier 2 Count " => $itemsTier2,
-                    "Tier 3 Count " => $itemsTier3,
-                ]
-            ],
+        return response(
+            $cart,
             200
         );
     } else {

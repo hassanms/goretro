@@ -45,13 +45,11 @@ class PreOrderController extends Controller
     function filterByBatch(Request $request)
     {
 
-        if ($request->batch == 'Batch 1') {
-            $preOrders = Products::orderBy("item_category")
-                ->where('received', 0)
-                ->where('batch', 1)
-                ->get();
+        if ($request->batch == 'Batch Arriving Soonest') {
+            $preOrders = Products::all()
+            ->sortBy('arrival_date'); 
 
-            $unique = $preOrders->unique('item_category');
+            $unique = $preOrders->unique('item_category')->where('received',0);
 
             $collection = $unique->map(function ($array) {
                 return collect($array)->unique('item_category')->all();
@@ -63,7 +61,7 @@ class PreOrderController extends Controller
 
 
             return $finalPro;
-        } else if ($request->batch == 'Batch 2') {
+        } else if ($request->batch == 'Batch Arriving Second') {
             $preOrders = DB::table('products')
                 ->select()
                 ->where('received', 0)
@@ -83,7 +81,7 @@ class PreOrderController extends Controller
 
 
             return $finalPro;
-        } else if ($request->batch == 'Batch 3') {
+        } else if ($request->batch == 'Batch Arriving Third') {
             $preOrders = DB::table('products')
                 ->select()
                 ->where('received', 0)
@@ -103,7 +101,7 @@ class PreOrderController extends Controller
 
 
             return $finalPro;
-        } else if ($request->batch == 'Batch 4') {
+        } else if ($request->batch == 'Batch Arriving Fourth') {
             $preOrders = DB::table('products')
                 ->select()
                 ->where('received', 0)

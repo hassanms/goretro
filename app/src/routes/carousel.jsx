@@ -14,13 +14,13 @@ export default function Carousel() {
   const [alertMessage, setAlertMessage] = useState("hidden");
   const navigate = useNavigate();
   const [input, setInput] = useState({
-    email: ""})
+    email: "",
+  });
   const [tier1Visibility, setTier1Visibility] = useState("hidden");
   const [tier2Visibility, setTier2Visibility] = useState("hidden");
   const [tier3Visibility, setTier3Visibility] = useState("hidden");
   const [tierItems, setTierItems] = useState(0);
   //States for refreshing carousel
-
 
   useEffect(() => {
     axios
@@ -52,7 +52,7 @@ export default function Carousel() {
         } else {
           console.log("Added successfully");
           setIndex((prev) => prev + 1);
-          setAlertMessage("hidden")
+          setAlertMessage("hidden");
         }
       })
       .catch((error) => {
@@ -64,19 +64,17 @@ export default function Carousel() {
     axios
       .get("http://127.0.0.1:8000/api/carousel//checkout")
       .then((res) => {
-        //Proceed to checkout
-      if(res.data['Items'])
-      {
-        console.log("Proceed to checkout")
-        //Navigate to Cart
-      }
-      else
-      {
-        alert(res.data.message+"\n"+res.data.items)
-      }
+        if (res.data.disableCheckout == false) {
+          //Proceed to checkout
+          localStorage.setItem("cart", JSON.stringify(res.data.cart));
+          //Navigate to Cart
+          navigate("/cart");
+        } else {
+          alert(res.data.message+"\n"+res.data.items);
+        }
       })
       .catch((error) => {
-        alert(error.data);
+        alert(error.message);
       });
   };
 
@@ -107,12 +105,11 @@ export default function Carousel() {
         .get("http://127.0.0.1:8000/api/carousel//show-tier-1")
         .then((res) => {
           //refresh carousel for only tier 1 items
-          console.log(res.data.items)
-          setTier1Visibility("visible")
-          setTier2Visibility("hidden")
-          setTier3Visibility("hidden")
-          setTierItems(res.data.count)
-          
+          console.log(res.data.items);
+          setTier1Visibility("visible");
+          setTier2Visibility("hidden");
+          setTier3Visibility("hidden");
+          setTierItems(res.data.count);
         })
         .catch((error) => {
           console.log("cart is empty");
@@ -122,10 +119,10 @@ export default function Carousel() {
         .get("http://127.0.0.1:8000/api/carousel//show-tier-2")
         .then((res) => {
           //refresh carousel for only tier 2 items
-          setTier2Visibility("visible")
-          setTier1Visibility("hidden")
-          setTier3Visibility("hidden")
-          setTierItems(res.data.count)
+          setTier2Visibility("visible");
+          setTier1Visibility("hidden");
+          setTier3Visibility("hidden");
+          setTierItems(res.data.count);
         })
         .catch((error) => {
           console.log("cart is empty");
@@ -135,11 +132,11 @@ export default function Carousel() {
       axios
         .get("http://127.0.0.1:8000/api/carousel//show-tier-3")
         .then((res) => {
-           //refresh carousel for only tier 3 items
-           setTier3Visibility("visible")
-           setTier2Visibility("hidden")
-           setTier1Visibility("hidden")
-           setTierItems(res.data.count)
+          //refresh carousel for only tier 3 items
+          setTier3Visibility("visible");
+          setTier2Visibility("hidden");
+          setTier1Visibility("hidden");
+          setTierItems(res.data.count);
         })
         .catch((error) => {
           console.log("cart is empty");
@@ -149,7 +146,7 @@ export default function Carousel() {
 
   const inputEmail = (e, email) => {
     e.preventDefault();
-    localStorage.setItem("email",JSON.stringify(email))
+    localStorage.setItem("email", JSON.stringify(email));
   };
 
   return (
@@ -293,14 +290,19 @@ export default function Carousel() {
                     Enter Email
                   </h3>
                 </div>
-               <form onSubmit={e=>inputEmail(e, input.email)}>
-               <input type="email"
-               onChange={e => setInput({
-                ...input,
-                email: e.target.value
-              })}
-               className="form-control text-lg font-medium bg-gray-400 text-gray-900 hover:bg-indigo-400" placeholder="Email"/>
-               </form>
+                <form onSubmit={(e) => inputEmail(e, input.email)}>
+                  <input
+                    type="email"
+                    onChange={(e) =>
+                      setInput({
+                        ...input,
+                        email: e.target.value,
+                      })
+                    }
+                    className="form-control text-lg font-medium bg-gray-400 text-gray-900 hover:bg-indigo-400"
+                    placeholder="Email"
+                  />
+                </form>
                 <fieldset class="mt-4">
                   <div
                     style={{ visibility: alertMessage }}
@@ -376,11 +378,9 @@ export default function Carousel() {
                   <button
                     onClick={() => viewTier("Tier 2")}
                     class="inline-block px-6 py-2 border-2 border-gray-900 text-gray-900 hover:border-orange-700 hover:bg-orange-100 hover:text-orange-500 font-medium text-xl leading-tight uppercase rounded focus:outline-none focus:ring-0 transition duration-150 ease-in-out w-full"
-                
-                    >
+                  >
                     Tier 2
                   </button>
-                
                 </div>
               </div>
 
@@ -390,41 +390,39 @@ export default function Carousel() {
                   <button
                     onClick={() => viewTier("Tier 3")}
                     class="inline-block px-6 py-2 border-2 border-gray-900 text-gray-900 hover:border-yellow-700 hover:bg-yellow-100 hover:text-yellow-500 font-medium text-xl leading-tight uppercase rounded focus:outline-none focus:ring-0 transition duration-150 ease-in-out w-full"
-                                  >
+                  >
                     Tier 3
                   </button>
-                 
                 </div>
               </div>
 
-                        {/* Tier 1 Span */}
+              {/* Tier 1 Span */}
               <div
-                    style={{ visibility: tier1Visibility }}
-                    class="bg-green-200 rounded-lg my-10 py-5 px-6 mb-4 text-lg text-red-700 mb-3"
-                    role="alert"
-                  >
-                    {tierItems} items are in Tier 1
-                  </div>
-              
+                style={{ visibility: tier1Visibility }}
+                class="bg-green-200 rounded-lg my-10 py-5 px-6 mb-4 text-lg text-red-700 mb-3"
+                role="alert"
+              >
+                {tierItems} items are in Tier 1
+              </div>
+
               {/* Tier 2 Span */}
               <div
-                    style={{ visibility: tier2Visibility }}
-                    class="bg-orange-200 rounded-lg my-10 py-5 px-6 mb-4 text-lg text-red-700 mb-3"
-                    role="alert"
-                  >
-                    {tierItems} items are in Tier 2
-                  </div>
+                style={{ visibility: tier2Visibility }}
+                class="bg-orange-200 rounded-lg my-10 py-5 px-6 mb-4 text-lg text-red-700 mb-3"
+                role="alert"
+              >
+                {tierItems} items are in Tier 2
+              </div>
 
-                  {/* Tier 3 Span */}
+              {/* Tier 3 Span */}
 
-                  <div
-                    style={{ visibility: tier3Visibility }}
-                    class="bg-blue-200 rounded-lg my-10 py-5 px-6 mb-4 text-lg text-red-700 mb-3"
-                    role="alert"
-                  >
-                    {tierItems} items are in Tier 3
-                  </div>
-
+              <div
+                style={{ visibility: tier3Visibility }}
+                class="bg-blue-200 rounded-lg my-10 py-5 px-6 mb-4 text-lg text-red-700 mb-3"
+                role="alert"
+              >
+                {tierItems} items are in Tier 3
+              </div>
             </div>
           </div>
         </>

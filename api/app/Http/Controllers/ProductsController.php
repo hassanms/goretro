@@ -84,10 +84,9 @@ function checkTier()
          */
         $cart = DB::table('carts')->select()->get();
 
-        return response(
-            $cart,
-            200
-        );
+        return [
+            "disableCheckout" => false,
+            "cart"=>$cart,];
     } else {
         return
             [

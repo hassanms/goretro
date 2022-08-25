@@ -66,7 +66,7 @@ export default function PreOrder() {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                Batch
+                Batch Filter by Date
                 <svg
                   aria-hidden="true"
                   focusable="false"
@@ -106,7 +106,7 @@ export default function PreOrder() {
         "
                 aria-labelledby="dropdownMenuButton1"
               >
-                <li onClick={() => filterBatch("Batch 1")}>
+                <li onClick={() => filterBatch("Batch Arriving Soonest")}>
                   <a
                     class="
               dropdown-item
@@ -123,10 +123,10 @@ export default function PreOrder() {
             "
                     href="#"
                   >
-                    Batch 1
+                    Batch Arriving Soonest
                   </a>
                 </li>
-                <li onClick={() => filterBatch("Batch 2")}>
+                <li onClick={() => filterBatch("Batch Arriving Second")}>
                   <a
                     class="
               dropdown-item
@@ -143,10 +143,10 @@ export default function PreOrder() {
             "
                     href="#"
                   >
-                    Batch 2
+                    Batch Arriving Second
                   </a>
                 </li>
-                <li onClick={() => filterBatch("Batch 3")}>
+                <li onClick={() => filterBatch("Batch Arriving Third")}>
                   <a
                     class="
               dropdown-item
@@ -163,11 +163,11 @@ export default function PreOrder() {
             "
                     href="#"
                   >
-                    Batch 3
+                    Batch Arriving Third
                   </a>
                 </li>
 
-                <li onClick={() => filterBatch("Batch 4")}>
+                <li onClick={() => filterBatch("Batch Arriving Fourth")}>
                   <a
                     class="
               dropdown-item
@@ -184,7 +184,7 @@ export default function PreOrder() {
             "
                     href="#"
                   >
-                    Batch 4
+                    Batch Arriving Fourth
                   </a>
                 </li>
               </ul>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useSearchParams, useNavigate  } from "react-router-dom";
 import "tw-elements";
@@ -6,10 +6,20 @@ import "tw-elements";
 export default function Cart()
 {
      const cartObj = JSON.parse(localStorage.getItem("cart"))
-     const totalItems = cartObj.cart.length
+     const [timer, setTimer] = useState("1:30");
      const subTotal = cartObj.subtotal
-     const navigate = useNavigate();
 
+     const price =0;
+
+     /**
+      *  Countdown Timer Logic
+      */
+    
+     /**
+      *     End of Timer
+      */
+
+     
      const stripeCheckout = () => {
         const payload = {
           "cart": cartObj.cart, 
@@ -23,7 +33,7 @@ export default function Cart()
         window.location.replace(res.data[0])
 
         })
-        .catch(error => {console.log("Checkout Incomplete")})
+        .catch(error => {alert(error.message)})
      }
     
     
@@ -53,7 +63,7 @@ export default function Cart()
               </div>
 
           {/* //Start of Cart Object */}
-          {cartObj.cart.map((item, index) => (
+          {cartObj.map((item, index) => (
               <div class="mt-8" key={index}>
                 <div class="flow-root">
                   <ul role="list" class="-my-6 divide-y divide-gray-200">
@@ -89,12 +99,13 @@ export default function Cart()
            
 
             ))}
+            <span>{timer}</span>
           {/* //End of Cart Object */}
 
             <div class=" border-t border-gray-200 py-60 px-10 sm:px-6">
               <div class="flex justify-between text-base font-medium text-gray-900">
                 <p class="text-green-900 font-bold text-xl">Subtotal</p>
-                <p class="text-green-900 font-bold text-base">£{cartObj.subtotal}</p>
+                <p class="text-green-900 font-bold text-base">£{cartObj.cart}</p>
               </div>
               <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
               <div class="mt-6">

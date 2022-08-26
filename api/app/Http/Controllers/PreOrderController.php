@@ -6,6 +6,7 @@ use App\Models\CurrentStock;
 use Illuminate\Http\Request;
 use App\Models\PreOrder;
 use App\Models\Products;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 function getViews($category)
@@ -44,83 +45,50 @@ class PreOrderController extends Controller
 
     function filterByBatch(Request $request)
     {
+       
+        $pastDates = "";
+        $preOrders = Products::all()
+        ->sortBy('arrival_date'); 
+
+        $unique = $preOrders->unique('arrival_date')->where('received',0);
+
+        $today = Carbon::today()->toDateString();
+        foreach($unique as $data)    
+        {
+            if($data->arrival_date > $today)
+            {
+                $dates[] = $data->arrival_date;
+            }
+            else
+            {
+                $pastDates = "Not Working";
+            }
+        }
+       
+        $collection = $unique->map(function ($array) {
+            return collect($array)->unique('arrival_date')->all();
+        });
+
+        $finalPro = Products::orderBy("arrival_date")
+            ->whereIn('id', $collection)
+            ->get();
+
+        
+           
+        return [$today, $unique[0]->arrival_date];
 
         if ($request->batch == 'Batch Arriving Soonest') {
-            $preOrders = Products::all()
-            ->sortBy('arrival_date'); 
+          $batch1 = DB::table('products')
+          ->select()->where('arrival_date', $dates[0]);
 
-            $unique = $preOrders->unique('item_category')->where('received',0);
-
-            $collection = $unique->map(function ($array) {
-                return collect($array)->unique('item_category')->all();
-            });
-
-            $finalPro = Products::orderBy("item_category")
-                ->whereIn('id', $collection)
-                ->get();
-
-
-            return $finalPro;
+          return $batch1;
         } else if ($request->batch == 'Batch Arriving Second') {
-            $preOrders = DB::table('products')
-                ->select()
-                ->where('received', 0)
-                ->where('batch', 2)
-                ->get();
-
-
-            $unique = $preOrders->unique('item_category');
-
-            $collection = $unique->map(function ($array) {
-                return collect($array)->unique('item_category')->all();
-            });
-
-            $finalPro = Products::orderBy("item_category")
-                ->whereIn('id', $collection)
-                ->get();
-
-
-            return $finalPro;
+           
         } else if ($request->batch == 'Batch Arriving Third') {
-            $preOrders = DB::table('products')
-                ->select()
-                ->where('received', 0)
-                ->where('batch', 3)
-                ->get();
+           
 
-
-            $unique = $preOrders->unique('item_category');
-
-            $collection = $unique->map(function ($array) {
-                return collect($array)->unique('item_category')->all();
-            });
-
-            $finalPro = Products::orderBy("item_category")
-                ->whereIn('id', $collection)
-                ->get();
-
-
-            return $finalPro;
         } else if ($request->batch == 'Batch Arriving Fourth') {
-            $preOrders = DB::table('products')
-                ->select()
-                ->where('received', 0)
-                ->where('batch', 4)
-                ->get();
-
-
-            $unique = $preOrders->unique('item_category');
-
-            $collection = $unique->map(function ($array) {
-                return collect($array)->unique('item_category')->all();
-            });
-
-            $finalPro = Products::orderBy("item_category")
-                ->whereIn('id', $collection)
-                ->get();
-
-
-            return $finalPro;
+            
         }
     }
 }

@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Products;
-use Encore\Admin\Grid\Filter\Where;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use App\Mail\SuperRareItem;
+use App\Models\SuperRareModel;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Stripe\Product;
 
 function checkTier()
 {
@@ -86,7 +89,8 @@ function checkTier()
 
         return [
             "disableCheckout" => false,
-            "cart"=>$cart,];
+            "cart" => $cart,
+        ];
     } else {
         return
             [
@@ -174,13 +178,13 @@ class ProductsController extends Controller
                     'id' => $record->id,
                     'item' => $record->item_name,
                     'brand' => $record->brand,
-                    'image_path' => $record->main_images_path,
+                    'main_image' => $record->main_images_path,
                     'price' => $record->price,
                     'color' => $record->color,
                     'tier' => $record->tier,
                     'category' => $record->item_category,
                     'received' => $record->received,
-                    'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
+                    'second_image' => $record->second_images_path != null ? $record->second_images_path : null
                 ];
             }
             return [$this->item, "Current Stock"];
@@ -191,13 +195,13 @@ class ProductsController extends Controller
                     'id' => $record->id,
                     'item' => $record->item_name,
                     'brand' => $record->brand,
-                    'image_path' => $record->main_images_path,
+                    'main_image' => $record->main_images_path,
                     'price' => $record->price,
                     'color' => $record->color,
                     'tier' => $record->tier,
                     'category' => $record->item_category,
                     'received' => $record->received,
-                    'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
+                    'second_image' => $record->second_images_path != null ? $record->second_images_path : null
                 ];
             }
             return [$this->item, "Pre Order"];
@@ -238,6 +242,13 @@ class ProductsController extends Controller
 
         $cart = new Cart();
 
+        $images = DB::table('products')
+        ->select('main_images_path')->where('item_name', $request->name)->get();
+
+        $damageImage = DB::table('products')
+        ->select('second_images_path')->where('item_name', $request->name)->get();
+
+
         $cart->name = $request->name;
         $cart->category = $request->category;
         $cart->price = $request->price;
@@ -246,6 +257,8 @@ class ProductsController extends Controller
         $cart->email = $request->email;
         $cart->session = $sessionID;
         $cart->lock_item = 1;
+        $cart->main_image = $images[0]->main_images_path;
+        $cart->second_image = $damageImage[0]->second_images_path;
 
         $result = $cart->save();
 
@@ -343,5 +356,63 @@ class ProductsController extends Controller
             ->select()
             ->where('tier', 'Tier 3')->get();
         return ["items" => $tier, "count" => count($tier)];
+    }
+
+    function emailSend()
+    {
+           /**
+             *   We will send email to customer after 7 days of purchase
+             */
+            $rareProduct = new SuperRareModel();
+            $cartItem = new Cart();
+
+            /**
+             *  Collecting Unique Emails from Database
+             */
+            $emails = Cart::all()
+                ->sortBy("email");
+
+            $unique = $emails->unique("email");
+
+            $collection = $unique->map(function ($array) {
+                return collect($array)->unique("email")->all();
+            });
+
+            $finalEmails = Cart::orderBy("email")
+                ->whereIn('id', $collection)
+                ->get();
+
+            for ($x = 0; $x < count($finalEmails); $x++) {
+
+                /**
+                 *      Check each unique email cart and sum their prices
+                 */
+                $uniqueEmails[] = $finalEmails[$x]['email'];
+                $cart = DB::table('carts')
+                    ->select('price')->where('email', $uniqueEmails[$x])->get();
+                $price = 0;
+                foreach ($cart as $data) {
+                    $price += $data->price;
+                }
+
+                // if ($price > 700) {
+
+                    /**
+                     * Every unique customer whose cart price total is
+                     * above 1000 we will send them email
+                     */
+
+                    $xx[] = $uniqueEmails[$x];
+
+                     Mail::to($xx[$x])->send(new SuperRareItem($cartItem, $rareProduct));
+                //}
+            }
+
+            
+    }
+
+    function superItem(Request $request)
+    {
+        Log::info($request);
     }
 }

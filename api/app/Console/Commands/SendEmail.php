@@ -8,6 +8,7 @@ use App\Models\Cart;
 use App\Models\SuperRareModel;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SuperRareItem;
+use Illuminate\Support\Facades\Log;
 
 class SendEmail extends Command
 {
@@ -45,7 +46,7 @@ class SendEmail extends Command
                 ->sortBy("email");
 
             $unique = $emails->unique("email");
-
+            
             $collection = $unique->map(function ($array) {
                 return collect($array)->unique("email")->all();
             });
@@ -53,7 +54,7 @@ class SendEmail extends Command
             $finalEmails = Cart::orderBy("email")
                 ->whereIn('id', $collection)
                 ->get();
-
+                
             for ($x = 0; $x < count($finalEmails); $x++) {
 
                 /**
@@ -66,21 +67,20 @@ class SendEmail extends Command
                 foreach ($cart as $data) {
                     $price += $data->price;
                 }
+                  
+            // if ($price > 1000) {
 
-                // if ($price > 1000) {
+            /**
+             * Every unique customer whose cart price total is
+             * above 1000 we will send them email
+             */
 
-                //     /**
-                //      * Every unique customer whose cart price total is
-                //      * above 1000 we will send them email
-                //      */
+            $xx[] = $uniqueEmails[$x];
 
-                //     $xx[] = $uniqueEmails[$x];
-
-                //     Mail::to($xx[$x])->send(new SuperRareItem($cartItem, $rareProduct));
-                // }
-                     Mail::to("hamzasareer321@gmail.com")->send(new SuperRareItem($cartItem, $rareProduct));
-                Log::info("Working");
-            return 0;
+            Mail::to($xx[$x])->send(new SuperRareItem($cartItem, $rareProduct));
+            //}
+            
             } 
+            return 0;
     }
 }

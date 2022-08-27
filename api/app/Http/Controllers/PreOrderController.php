@@ -55,6 +55,7 @@ class PreOrderController extends Controller
         $today = Carbon::today()->toDateString();
         foreach($unique as $data)    
         {
+            $date = $data->arrival_date->toDateString();
             if($data->arrival_date > $today)
             {
                 $dates[] = $data->arrival_date;

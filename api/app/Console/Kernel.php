@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
        
         $after7Days = Carbon::today()->addDays(7)->toFormattedDateString();
-        $schedule->command('send:email')->at($after7Days);
+        $schedule->command('send:email')->everyMinute();
     }
 
     /**

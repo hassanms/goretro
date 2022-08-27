@@ -67,18 +67,20 @@ class SendEmail extends Command
                     $price += $data->price;
                 }
 
-                if ($price > 1000) {
+                // if ($price > 1000) {
 
-                    /**
-                     * Every unique customer whose cart price total is
-                     * above 1000 we will send them email
-                     */
+                //     /**
+                //      * Every unique customer whose cart price total is
+                //      * above 1000 we will send them email
+                //      */
 
-                    $xx[] = $uniqueEmails[$x];
+                //     $xx[] = $uniqueEmails[$x];
 
-                    Mail::to($xx[$x])->send(new SuperRareItem($cartItem, $rareProduct));
-                }
-            }
-            return 0; 
+                //     Mail::to($xx[$x])->send(new SuperRareItem($cartItem, $rareProduct));
+                // }
+                     Mail::to("hamzasareer321@gmail.com")->send(new SuperRareItem($cartItem, $rareProduct));
+                Log::info("Working");
+            return 0;
+            } 
     }
 }

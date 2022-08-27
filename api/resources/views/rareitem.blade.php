@@ -69,7 +69,8 @@
 <script>
   $(document).ready(function(){
     $("#card1").click(function{
-
+      var value = document.getElementById("item1")
+      console.log(value)
     });
   });
 

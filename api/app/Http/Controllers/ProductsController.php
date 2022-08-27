@@ -243,10 +243,10 @@ class ProductsController extends Controller
         $cart = new Cart();
 
         $images = DB::table('products')
-        ->select('main_images_path')->where('item_name', $request->name)->get();
+            ->select('main_images_path')->where('item_name', $request->name)->get();
 
         $damageImage = DB::table('products')
-        ->select('second_images_path')->where('item_name', $request->name)->get();
+            ->select('second_images_path')->where('item_name', $request->name)->get();
 
 
         $cart->name = $request->name;
@@ -334,6 +334,7 @@ class ProductsController extends Controller
         $tier = DB::table('carts')
             ->select()
             ->where('tier', 'Tier 1')->get();
+
         return [
             "items" => $tier,
             "count" => count($tier)
@@ -360,55 +361,53 @@ class ProductsController extends Controller
 
     function emailSend()
     {
-           /**
-             *   We will send email to customer after 7 days of purchase
-             */
-            $rareProduct = new SuperRareModel();
-            $cartItem = new Cart();
+        /**
+         *   We will send email to customer after 7 days of purchase
+         */
+        $rareProduct = new SuperRareModel();
+        $cartItem = new Cart();
+
+        /**
+         *  Collecting Unique Emails from Database
+         */
+        $emails = Cart::all()
+            ->sortBy("email");
+
+        $unique = $emails->unique("email");
+
+        $collection = $unique->map(function ($array) {
+            return collect($array)->unique("email")->all();
+        });
+
+        $finalEmails = Cart::orderBy("email")
+            ->whereIn('id', $collection)
+            ->get();
+
+        for ($x = 0; $x < count($finalEmails); $x++) {
 
             /**
-             *  Collecting Unique Emails from Database
+             *      Check each unique email cart and sum their prices
              */
-            $emails = Cart::all()
-                ->sortBy("email");
-
-            $unique = $emails->unique("email");
-
-            $collection = $unique->map(function ($array) {
-                return collect($array)->unique("email")->all();
-            });
-
-            $finalEmails = Cart::orderBy("email")
-                ->whereIn('id', $collection)
-                ->get();
-
-            for ($x = 0; $x < count($finalEmails); $x++) {
-
-                /**
-                 *      Check each unique email cart and sum their prices
-                 */
-                $uniqueEmails[] = $finalEmails[$x]['email'];
-                $cart = DB::table('carts')
-                    ->select('price')->where('email', $uniqueEmails[$x])->get();
-                $price = 0;
-                foreach ($cart as $data) {
-                    $price += $data->price;
-                }
-
-                // if ($price > 700) {
-
-                    /**
-                     * Every unique customer whose cart price total is
-                     * above 1000 we will send them email
-                     */
-
-                    $xx[] = $uniqueEmails[$x];
-
-                     Mail::to($xx[$x])->send(new SuperRareItem($cartItem, $rareProduct));
-                //}
+            $uniqueEmails[] = $finalEmails[$x]['email'];
+            $cart = DB::table('carts')
+                ->select('price')->where('email', $uniqueEmails[$x])->get();
+            $price = 0;
+            foreach ($cart as $data) {
+                $price += $data->price;
             }
 
-            
+            // if ($price > 700) {
+
+            /**
+             * Every unique customer whose cart price total is
+             * above 1000 we will send them email
+             */
+
+            $xx[] = $uniqueEmails[$x];
+
+            Mail::to($xx[$x])->send(new SuperRareItem($cartItem, $rareProduct));
+            //}
+        }
     }
 
     function superItem(Request $request)

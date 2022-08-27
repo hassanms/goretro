@@ -359,59 +359,23 @@ class ProductsController extends Controller
         return ["items" => $tier, "count" => count($tier)];
     }
 
-    function emailSend()
-    {
-        /**
-         *   We will send email to customer after 7 days of purchase
-         */
-        $rareProduct = new SuperRareModel();
-        $cartItem = new Cart();
-
-        /**
-         *  Collecting Unique Emails from Database
-         */
-        $emails = Cart::all()
-            ->sortBy("email");
-
-        $unique = $emails->unique("email");
-
-        $collection = $unique->map(function ($array) {
-            return collect($array)->unique("email")->all();
-        });
-
-        $finalEmails = Cart::orderBy("email")
-            ->whereIn('id', $collection)
-            ->get();
-
-        for ($x = 0; $x < count($finalEmails); $x++) {
-
-            /**
-             *      Check each unique email cart and sum their prices
-             */
-            $uniqueEmails[] = $finalEmails[$x]['email'];
-            $cart = DB::table('carts')
-                ->select('price')->where('email', $uniqueEmails[$x])->get();
-            $price = 0;
-            foreach ($cart as $data) {
-                $price += $data->price;
-            }
-
-            // if ($price > 700) {
-
-            /**
-             * Every unique customer whose cart price total is
-             * above 1000 we will send them email
-             */
-
-            $xx[] = $uniqueEmails[$x];
-
-            Mail::to($xx[$x])->send(new SuperRareItem($cartItem, $rareProduct));
-            //}
-        }
-    }
-
     function superItem(Request $request)
     {
-        Log::info($request);
+        $name = $request->name;
+        $price = $request->price;
+        $superItems = new SuperRareModel();
+
+        $superItems->item_name = $name;
+        $superItems->price = $price;
+
+        $result = $superItems->save();
+        if($result)
+        {
+            Log::info("Added Record");
+        }
+        else
+        {
+            Log::error("API call failed");
+        }
     }
 }

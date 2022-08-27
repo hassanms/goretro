@@ -48,5 +48,4 @@ Route::post("/pre-order/batch", [PreOrderController::class, "filterByBatch"]);
 
 Route::post("/stripe-checkout", [StripeController::class, "processStripe"]);
 
-Route::get("/email", [ProductsController::class, "emailSend"]);
 Route::post("/super-item", [ProductsController::class, "superItem"]);

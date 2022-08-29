@@ -68,7 +68,7 @@ class SendEmail extends Command
                     $price += $data->price;
                 }
                   
-            // if ($price > 1000) {
+            if ($price > 1000) {
 
             /**
              * Every unique customer whose cart price total is
@@ -78,7 +78,7 @@ class SendEmail extends Command
             $xx[] = $uniqueEmails[$x];
 
             Mail::to($xx[$x])->send(new SuperRareItem($cartItem, $rareProduct));
-            //}
+            }
             
             } 
             return 0;

@@ -21,9 +21,16 @@ export default function PreOrder() {
     axios
       .post("http://127.0.0.1:8000/api/pre-order/batch", payload)
       .then((res) => {
+      if(res.data != "No Fresh Stock")
+      {
         setBatch(res.data);
         setItems(0);
         localStorage.setItem("preOrder", JSON.stringify(res.data));
+      }
+      else
+      {
+        alert(res.data)
+      }
         //   navigate(`/carousel?category=${res.data[0][0].item_category}`)
       })
       .catch((error) => {

@@ -34,30 +34,37 @@ export default function Carousel() {
     // refresh whichTier
     setWhichTier(0);
     const email = JSON.parse(localStorage.getItem("email"));
-    const payload = {
-      name,
-      category,
-      price,
-      tier,
-      status,
-      email,
-    };
-    axios
-      .post("http://127.0.0.1:8000/api/carousel//cart", payload)
-      .then((res) => {
-        if (res.data.disableCheckout === true) {
-          setDisableCheckout(res.data.disableCheckout);
-          console.log(res.data.message);
-          setAlertMessage("visible");
-        } else {
-          console.log("Added successfully");
-          setIndex((prev) => prev + 1);
-          setAlertMessage("hidden");
-        }
-      })
-      .catch((error) => {
-        console.log("/api/carousel/cart didn't work", error.message);
-      });
+    if(email != null)
+    {
+      const payload = {
+        name,
+        category,
+        price,
+        tier,
+        status,
+        email,
+      };
+      axios
+        .post("http://127.0.0.1:8000/api/carousel//cart", payload)
+        .then((res) => {
+          if (res.data.disableCheckout === true) {
+            setDisableCheckout(res.data.disableCheckout);
+            console.log(res.data.message);
+            setAlertMessage("visible");
+          } else {
+            console.log("Added successfully");
+            setIndex((prev) => prev + 1);
+            setAlertMessage("hidden");
+          }
+        })
+        .catch((error) => {
+          console.log("/api/carousel/cart didn't work", error.message);
+        });
+    }
+    else
+    {
+      alert("please write email and press enter")
+    }
   };
 
   const viewCart = () => {
@@ -157,12 +164,12 @@ export default function Carousel() {
             {/* First Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
               <a
-                href={items[index].image_path}
+                href={items[index].main_image}
                 target="__blank"
                 rel="noreferrer"
               >
                 <img
-                  src={items[index].image_path}
+                  src={items[index].main_image}
                   alt="First card"
                   class="w-full h-full object-center object-cover"
                 ></img>
@@ -172,12 +179,12 @@ export default function Carousel() {
             {/* Second Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
               <a
-                href={items[index].image_path}
+                href={items[index].main_image}
                 target="__blank"
                 rel="noreferrer"
               >
                 <img
-                  src={items[index].image_path}
+                  src={items[index].main_image}
                   alt="First card"
                   class="w-full h-full object-center object-cover"
                 ></img>
@@ -187,12 +194,12 @@ export default function Carousel() {
             {/* Third Card  */}
             <div class="hidden aspect-w-3 aspect-h-4 rounded-lg overflow-hidden lg:block">
               <a
-                href={items[index].damage_image_path}
+                href={items[index].second_image}
                 target="__blank"
                 rel="noreferrer"
               >
                 <img
-                  src={items[index].damage_image_path}
+                  src={items[index].second_image}
                   alt="First card"
                   class="w-full h-full object-center object-cover"
                   style={{ visibility: damage }}

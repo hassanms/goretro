@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Statusbar from '../components/Statusbar';
 
 export default function CurrentStock() {
     const [stocks, setStocks] = useState([]);
@@ -10,6 +11,8 @@ export default function CurrentStock() {
     }, [])
     
     return (
+        <>
+        <Statusbar />
         <main class="max-h-full">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="max-w-2xl mx-auto py-4 sm:py-8 lg:py-16 lg:max-w-none">
@@ -51,5 +54,6 @@ export default function CurrentStock() {
                 </div>
             </div>
         </main>
+        </>
     );
 }

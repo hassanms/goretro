@@ -86,10 +86,11 @@ function checkTier()
          * Proceed to checkout
          */
         $cart = DB::table('carts')->select()->get();
-
+        $subTotal = Cart::sum('price');
         return [
             "disableCheckout" => false,
             "cart" => $cart,
+            "subTotal" => $subTotal,
         ];
     } else {
         return

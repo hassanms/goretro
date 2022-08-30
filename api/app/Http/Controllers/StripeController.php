@@ -19,8 +19,8 @@ class StripeController extends Controller
          /**
           *  Add a Product
           */
-          $subTotal = $request->subTotal;
-          $cart = $request->cart;
+          $subTotal = $request->total;
+          $cart = $request->cartObj;
 
           foreach($cart as $data)
           {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import "tw-elements";
+import Statusbar from "../components/Statusbar";
 
 export default function Carousel() {
   const [items, setItems] = useState([]);
@@ -73,7 +74,7 @@ export default function Carousel() {
       .then((res) => {
         if (res.data.disableCheckout == false) {
           //Proceed to checkout
-          localStorage.setItem("cart", JSON.stringify(res.data.cart));
+          localStorage.setItem("cart", JSON.stringify(res.data));
           //Navigate to Cart
           navigate("/cart");
         } else {
@@ -157,6 +158,8 @@ export default function Carousel() {
   };
 
   return (
+    <>
+    <Statusbar />
     <main>
       {items[index] ? (
         <>
@@ -455,5 +458,6 @@ export default function Carousel() {
         </div>
       )}
     </main>
+    </>
   );
 }

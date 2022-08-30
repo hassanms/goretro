@@ -1,5 +1,9 @@
+
+import Statusbar from "../components/Statusbar"
 export default function HowItWorks() {
     return (
+        <>
+        <Statusbar />
         <main class="flex items-center flex-col justify-center p-10">
             <div class="flex items-center justify-center">
                 <iframe 
@@ -21,5 +25,6 @@ export default function HowItWorks() {
                 Wholesale - Due to our strategic location, favourable tax benefits and great shipping routes by air and sear, we are able to sort our own rag and deliver a fine grade of used branded clothing to clients at scale with consistency.
             </div>
         </main>
+        </>
     );
 }

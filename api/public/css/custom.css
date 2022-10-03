@@ -1,0 +1,127 @@
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.profile_picture_display {
+    width: 125px;
+    height: 125px;
+    margin:10px;
+    border: 8px solid #d3d3b8;
+}
+
+.profile_picture_display2 {
+    width: 150px;
+height: 112px;
+margin: 18px;
+border: 1px solid #d3d3b8;
+}
+
+.profile_img {
+    width: 109px;
+    height: 109px;
+}
+
+.profile_img2 {
+    width: 148px;
+height: 110px;
+}
+
+.std_img {
+    width: 75px;
+    height: 75px;
+}
+
+a.disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
+
+
+label.error {
+    color: #ff0000;
+}
+
+.table-top-campaign.table td {
+    border-top: none;
+    border-bottom: 1px solid rgb(226, 223, 224);
+    font-size: 14px;
+    padding: 12px 6px;
+}
+
+.table-top-campaign.table tr td:first-child {
+    color: #4a6de2;
+    text-align: right;
+    border-right: 1px solid rgb(226, 223, 224);
+}
+
+.table-top-campaign.table tr td:last-child {
+    color: #060707;
+    text-align: left;
+}
+
+.table-top-campaign.table tr:last-child td {
+    border-bottom: none;
+}
+
+.uk {
+    font-size: 85px;
+    color: darkblue;
+    margin-top: -16px;
+    text-decoration: underline;
+    margin-bottom: 0rem;
+}
+
+.uk_inst {
+    font-size: 42px;
+    margin-top: -14px;
+    color: darkblue;
+    padding-bottom: 0px;
+}
+
+.tnbf {
+    text-align: right;
+    color: darkblue;
+    margin-top: -24px;
+    font-size: 23px;
+}
+.bgc-default-tp1 {
+    background-color: rgba(34, 185, 160, 0.92) !important;
+}
+
+.instructions {
+    margin-left: 40px;
+    padding: 3px 7px;
+    border-radius: 5px;
+    background-color: rgb(12, 176, 191);
+    color: white;
+}
+
+.ftr {
+    height: 30px;
+    background-color:rgb(12, 176, 191);
+}
+
+.ftr p {
+    font-size: 14px;
+    color: white;
+    padding-top: 5px;
+}
+
+
+
+.brc-default-l1 {
+    border-color: #dce9f0 !important;
+}
+
+.pbt {
+    margin-bottom: 7px;
+}

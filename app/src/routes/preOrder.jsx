@@ -5,10 +5,10 @@ import "tw-elements";
 import Statusbar from "../components/Statusbar";
 
 export default function PreOrder() {
-  const [items, setItems] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [batchItem, setBatch] = useState([]);
-  const navigate = useNavigate();
+    const [items, setItems] = useState([]);
+    // const [searchParams, setSearchParams] = useSearchParams();
+    const [batchItem, setBatch] = useState([]);
+    // const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`http://127.0.0.1:8000/api/pre-order`).then((res) => {

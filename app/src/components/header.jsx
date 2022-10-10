@@ -1,8 +1,8 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-import { Outlet, Link } from "react-router-dom";
+// import { Fragment } from 'react'
+import { Disclosure } from '@headlessui/react'
+import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import { Link } from "react-router-dom";
 
 const navigation = [
     { name: 'How It Works', href: '/how-it-works', current: true },
@@ -14,7 +14,6 @@ const navigation = [
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
-
 
 export default function Header() {
     const setCurrent = (href) => {
@@ -71,9 +70,9 @@ export default function Header() {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {/* Show Cart Icon Here */}
-                        
+
                         </div>
                     </div>
 

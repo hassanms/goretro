@@ -19,8 +19,8 @@ class StripeController extends Controller
          /**
           *  Add a Product
           */
-          $subTotal = $request->subTotal;
-          $cart = $request->cart;
+          $subTotal = $request->total;
+          $cart = $request->cartObj;
 
           foreach($cart as $data)
           {
@@ -87,13 +87,16 @@ class StripeController extends Controller
                           
                           ['price' => $priceID[2]['id'],
                           'quantity' => 1,],
+
+                          ['price' => $priceID[3]['id'],
+                          'quantity' => 1,],
+
+                          ['price' => $priceID[4]['id'],
+                          'quantity' => 1,],
                       
                         ]
 
                   ]);
-
-        /** Empty Guest Cart */
-        DB::table('carts')->truncate();
 
         return[$paymentLink->url];
         /**

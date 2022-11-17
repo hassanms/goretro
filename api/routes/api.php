@@ -29,7 +29,6 @@ Route::get("/getViews/{category}", [CurrentStockController::class, "getViews"]);
 Route::get("/carousel", [ProductsController::class, "getAllProducts"]);
 Route::get("/carousel/{category}", [ProductsController::class, "displayProductByCategory"]);
 Route::get("/carousel/tier", [ProductsController::class, "checkTier"]);
-Route::get("/carousel/status/{lockstatus}", [ProductsController::class, "checkItemLock"]);
 Route::get("/carousel//checkout", [ProductsController::class, "checkoutCart"]);
 
 //Show Tiers
@@ -39,7 +38,8 @@ Route::get("/carousel//show-tier-3", [ProductsController::class, "showTier3"]);
 
 //Post Routes
 Route::post("/carousel", [ProductsController::class, "addProduct"]);
-Route::post("/carousel/cart", [ProductsController::class, "addToCart"]);
+Route::post("/carousel//cart", [ProductsController::class, "addToCart"]);
+Route::post("/carousel/damage", [ProductsController::class, "showDamage"]);
 Route::get("/carousel//checkout", [ProductsController::class, "checkoutCart"]);
 
 //Pre Order Routes
@@ -47,3 +47,5 @@ Route::get("/pre-order", [PreOrderController::class, "preOrders"]);
 Route::post("/pre-order/batch", [PreOrderController::class, "filterByBatch"]);
 
 Route::post("/stripe-checkout", [StripeController::class, "processStripe"]);
+
+Route::post("/super-item", [ProductsController::class, "superItem"]);

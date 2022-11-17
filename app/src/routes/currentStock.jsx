@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Statusbar from '../components/Statusbar';
 
 export default function CurrentStock() {
     const [stocks, setStocks] = useState([]);
 
     useEffect(() => {
-        axios.get(`http://glacial-beach-87404.herokuapp.com/api/currentStock`)
+        axios.get(`http://127.0.0.1:8000/api/currentStock`)
             .then(res => { setStocks(res.data) })
     }, [])
 
     return (
+        <>
+        <Statusbar />
         <main class="max-h-full">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="max-w-2xl mx-auto py-4 sm:py-8 lg:py-16 lg:max-w-none">
@@ -33,7 +36,7 @@ export default function CurrentStock() {
                                             {stock.name}
                                         </h3>
                                         <span class="font-bold text-indigo-900 absolute inset-0 p-2">
-                                            {`${stock.views} people are viewing`}
+                                            {`10 people are viewing`}
                                         </span>
                                         <h3 class="text-center text-base text-gray-500">
                                             <a href={`/carousel?category=${stock.name}`}>
@@ -51,5 +54,6 @@ export default function CurrentStock() {
                 </div>
             </div>
         </main>
+        </>
     );
 }

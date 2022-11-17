@@ -6,29 +6,106 @@ use App\Models\Cart;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Mail\SuperRareItem;
+use App\Models\SuperRareModel;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Stripe\Product;
 
 function checkTier()
 {
     /**Iterate over current user cart */
-    $tier1 = Cart::all()->where('tier', 'Tier 1');
+    $tier1 = DB::table('carts')
+        ->select()
+        ->where('tier', 'Tier 1')->get();
+    $itemsTier1 = count($tier1);
 
-    if (count($tier1) <= 2) {
+    $tier2 = DB::table('carts')
+        ->select()
+        ->where('tier', 'Tier 2')->get();
+    $itemsTier2 = count($tier2);
+
+    $tier3 = DB::table('carts')
+        ->select()
+        ->where('tier', 'Tier 3')->get();
+    $itemsTier3 = count($tier3);
+
+    
+    if ($itemsTier1 > 0 && $itemsTier2 == 0 && $itemsTier3 == 0) {
+        /**
+         * Here if a customer only purchase items from Tier 1,
+         * We will not let them checkout
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "You cannot purchase only Tier 1 Items",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 == 0 && $itemsTier2 == 0 && $itemsTier3 == 0) {
+        /**
+         * Cart is Empty
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "No items in cart",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 > 0 && $itemsTier2 > 0 && $itemsTier3 == 0) {
+        /**
+         * Customer can't only purchase itesm from two tier
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "You must purchase items from Tier 3",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 > 0 && $itemsTier2 == 0 && $itemsTier3 > 0) {
+        /**
+         * Customer can't only purchase itesm from two tier
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "You must purchase items from Tier 2",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 == 0 && $itemsTier2 > 0 && $itemsTier3 > 0) {
+        /**
+         * Customer can't only purchase itesm from two tier
+         */
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "You must purchase items from Tier 1",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
+    } else if ($itemsTier1 > 0 && $itemsTier2 == ($itemsTier1 * 2) && $itemsTier3 == ($itemsTier1 * 2)) {
+        /**
+         * Proceed to checkout
+         */
+        $cart = DB::table('carts')->select()->get();
+        $subTotal = Cart::sum('price');
         return [
-            "id" => 1,
-            "message" => "Proceed to checkout",
-            "disableCheckout" => false
+            "disableCheckout" => false,
+            "cart" => $cart,
+            "subTotal" => $subTotal,
         ];
     } else {
-        return [
-            "id" => 0,
-            "message" => "you must add " . count($tier1) * 2 . " items from Tier 2 & Tier 3 to proceed",
-            // "disableCheckout" => true
-        ];
+        return
+            [
+                "disableCheckout" => true,
+                "message" => "Checkout conditions not met",
+                "items" => "Tier 1: " . $itemsTier1 . " items\n" . "Tier 2: " . $itemsTier2 . " items\n" . "Tier 3: " . $itemsTier3 . " items"
+            ];
     }
 }
 
 class ProductsController extends Controller
 {
+
     public $item = [];
     //
     function getAllProducts()
@@ -36,10 +113,12 @@ class ProductsController extends Controller
         /**
          * This api will fetch and return all products in DB
          */
-        $products[] = Products::all();
-
+        $products = Products::all();
+     //   dd($products);
+    //  Log::debug("Get All Carousel Data", [$products]);
         return [$products];
     }
+
 
     function addProduct(Request $request)
     {
@@ -69,7 +148,7 @@ class ProductsController extends Controller
          *  Add products to stripe dynamically using webhooks
          */
 
-        if ($result) {
+        if ($result !== null) {
 
             return ['Result' => 'Data saved successfully'];
         } else {
@@ -84,112 +163,120 @@ class ProductsController extends Controller
          * This api will display products in carousel by category
          */
 
-        $query = DB::table('products')
-            ->select()
-            ->where('item_category', $category)
-            ->where('received', 1)
-            ->get();
-
-        $preOrder = DB::table('products')
+            $query = DB::table('products')
             ->select()
             ->where('item_category', $category)
             ->where('received', 0)
             ->get();
-
-        if(count($query) > 0)
-        {
-            foreach ($query as $record) 
-        {
             
+            // Log::debug("Query", [$query]);
+    //     ->where('item_category', $category)
+    //     ->where('received', 1)
+    //     ->get();
+
+    //     Log::debug("message", [$query]);
+    //     $query = DB::table('products')->get();
+ 
+    //    // dd($query);
+        $preOrder = DB::table('products')
+            ->select()
+    //         ->where('item_category', $category)
+            ->where('received', 0)
+            ->get();
+    //     dd($preOrder);
+        if (count($query) > 0) {
+            foreach ($query as $record) {
                 $this->item[] = [
                     'id' => $record->id,
                     'item' => $record->item_name,
                     'brand' => $record->brand,
-                    'image_path' => $record->main_images_path,
+                    'main_image' => $record->main_images_path,
                     'price' => $record->price,
                     'color' => $record->color,
                     'tier' => $record->tier,
                     'category' => $record->item_category,
                     'received' => $record->received,
-                    'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
+                    'second_image' => $record->second_images_path != null ? $record->second_images_path : null
                 ];
-        }
-        return[$this->item, "Current Stock"];
-        
-        }
-        else
-        {
-                 foreach ($preOrder as $record) 
-            {
-                
-                    $this->item[] = [
-                        'id' => $record->id,
-                        'item' => $record->item_name,
-                        'brand' => $record->brand,
-                        'image_path' => $record->main_images_path,
-                        'price' => $record->price,
-                        'color' => $record->color,
-                        'tier' => $record->tier,
-                        'category' => $record->item_category,
-                        'received' => $record->received,
-                        'damage_image_path' => $record->second_images_path != null ? $record->second_images_path : null
-                    ];
-            }         
-            return[$this->item, "Pre Order"];    
-        }      
+            }
+            return [$this->item, "Current Stock"];
 
-    }
-
-    
-
-    function checkItemLock($status)
-    {
-        /**
-         * This api will check that item is not in any customers cart
-         */
-
-        $locked = 0;
-        $query = DB::table('products')
-            ->select()
-            ->where('locked', $status)->get();
-
-        foreach ($query as $record) {
-            $this->item[] = [
-                'id: ' => $record->id,
-                'item' => $record->item_name,
-                'locked' => $record->locked,
-            ];
-            $locked = $record->locked;
-        }
-
-        if ($locked = $status) {
-            return [$this->item, "This item has been chosen by another customer and is in their cart. It will become available if they do not purchase within 1 hour"];
         } else {
-            return [$this->item, "Item is unlocked please proceed to checkout."];
+            foreach ($preOrder as $record) {
+
+                $this->item[] = [
+                    'id' => $record->id,
+                    'item' => $record->item_name,
+                    'brand' => $record->brand,
+                    'main_image' => $record->main_images_path,
+                    'price' => $record->price,
+                    'color' => $record->color,
+                    'tier' => $record->tier,
+                    'category' => $record->item_category,
+                    'received' => $record->received,
+                    'second_image' => $record->second_images_path != null ? $record->second_images_path : null
+                ];
+            }
+            return [$this->item, "Pre Order"];
         }
     }
+
+
+    //Show Damage Quantity "/carousel/damage"
+    function showDamage(Request $request)
+    {
+        $damageImage = DB::table('products')
+            ->select('second_images_path')
+            ->where('item_name', $request->name)
+            ->get();
+
+        if ($damageImage[0]->second_images_path != null) {
+            return $damageImage[0]->second_images_path;
+        } else {
+            return "No damage in product";
+        }
+    }
+
 
     function addToCart(Request $request)
     {
 
         $sessionID = $request->ip();
 
+        $checkLock = DB::table('carts')
+            ->select('lock_item')->where('name', $request->name)
+            ->get();
 
+        if (count($checkLock) > 0) {
+            if ($checkLock[0]->lock_item == 1) {
+                return [
+                    "disableCheckout" => true,
+                    "message" => "This item is already in other customer cart"
+                ];
+            }
+        }
 
         $cart = new Cart();
+
+        $images = DB::table('products')
+            ->select('main_images_path')->where('item_name', $request->name)->get();
+
+        $damageImage = DB::table('products')
+            ->select('second_images_path')->where('item_name', $request->name)->get();
+
 
         $cart->name = $request->name;
         $cart->category = $request->category;
         $cart->price = $request->price;
         $cart->tier = $request->tier;
         $cart->status = $request->status;
+        $cart->email = $request->email;
         $cart->session = $sessionID;
+        $cart->lock_item = 1;
+        $cart->main_image = $images[0]->main_images_path;
+        $cart->second_image = $damageImage[0]->second_images_path;
 
         $result = $cart->save();
-
-        /**
-         *  Checkout to Stripe
-         */
 
         if ($result) {
 
@@ -245,62 +332,66 @@ class ProductsController extends Controller
             /**
              * Unlock all items in cart
              */
-        } else {
-            $result = checkTier();
-
-            if ($result['id'] == 1) {
-                $carts = Cart::all();
-                $subtotal = Cart::sum('price');
-                // $total_items = Cart::count('name');
-                $ip = $request->ip();
-
-                $extra = [
-                    "subtotal" => $subtotal,
-                    // "items" => $total_items
-                ];
-
-                $first = collect(["cart" => $carts]);
-                $second = collect($extra);
-
-                foreach ($carts as $data) {
-                    $currentUser = $data->session;
-
-                    if ($currentUser == $ip) {
-                        $merged = $first->merge($second);
-                        return $merged->toArray();
-                    } else {
-                        return ["Guest user not found"];
-                    }
-                }
-            } //End of nested IF
-            else if ($result['id'] == 0) {
-                return [
-                    "disableCheckout" => true, 
-                    "message" => $result['message']
-                ];
+            $cart = DB::update('update carts set lock_item = 0');
+            if ($cart)
+                return "Timer Expired All items are now unlocked";
+            else {
+                return "Error in checkoutCart Function";
             }
+        } else {
+            return checkTier();
         }
     }
 
 
-
     function showTier1()
     {
-        $tier = Cart::all()->where('tier', 'Tier 1');
-        return count($tier);
+        $tier = DB::table('carts')
+            ->select()
+            ->where('tier', 'Tier 1')->get();
+
+        return [
+            "items" => $tier,
+            "count" => count($tier)
+        ];
     }
 
 
     function showTier2()
     {
-        $tier = Cart::all()->where('tier', 'Tier 2');
-        return count($tier);
+        $tier = DB::table('carts')
+            ->select()
+            ->where('tier', 'Tier 2')->get();
+        return ["items" => $tier, "count" => count($tier)];
     }
 
 
     function showTier3()
     {
-        $tier = Cart::all()->where('tier', 'Tier 3');
-        return count($tier);
+        $tier = DB::table('carts')
+            ->select()
+            ->where('tier', 'Tier 3')->get();
+        return ["items" => $tier, "count" => count($tier)];
+    }
+
+
+    function superItem(Request $request)
+    {
+        $name = $request->name;
+        $price = $request->price;
+        $superItems = new SuperRareModel();
+
+        $superItems->item_name = $name;
+        $superItems->price = $price;
+
+        $result = $superItems->save();
+        if($result)
+        {
+            Log::info("Added Record");
+        }
+        else
+        {
+            Log::error("API call failed");
+        }
     }
 }

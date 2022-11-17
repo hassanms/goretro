@@ -5,19 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cart extends Model
+class SuperRareModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'carts';
+    protected $table = 'super_rare_products';
 
     protected $fillable = [
         'name',
-        'category',
-        'price',
-        'email',
-        'status',
-        'session',
-        'lock_item'
+        'price'
     ];
 }

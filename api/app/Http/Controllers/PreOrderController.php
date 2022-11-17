@@ -6,23 +6,17 @@ use App\Models\CurrentStock;
 use Illuminate\Http\Request;
 use App\Models\PreOrder;
 use App\Models\Products;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 function getViews($category)
 {
-    if($category === 'popular')
-    {
-        return rand(4,6);
-    }
-
-    else if($category === 'average')
-    {
-        return rand(0,3);
-    }
-
-    else if($category === 'common')
-    {
-        return rand(0,2);
+    if ($category === 'popular') {
+        return rand(4, 6);
+    } else if ($category === 'average') {
+        return rand(0, 3);
+    } else if ($category === 'common') {
+        return rand(0, 2);
     }
 }
 
@@ -35,16 +29,15 @@ class PreOrderController extends Controller
     {
         $new_data = [];
         $data = PreOrder::all();
-        foreach($data as $record)
-        {
-            $new_data[] = 
-            [
-                'id' => $record->id,
-                'name' => $record->name,
-                'category' => $record->category,
-                'image' => $record->image,
-                'items_left' => $record->items_left
-            ];
+        foreach ($data as $record) {
+            $new_data[] =
+                [
+                    'id' => $record->id,
+                    'name' => $record->name,
+                    'category' => $record->category,
+                    'image' => $record->image,
+                    'items_left' => $record->items_left
+                ];
         }
 
         return $new_data;
@@ -52,57 +45,64 @@ class PreOrderController extends Controller
 
     function filterByBatch(Request $request)
     {
-        
-        if($request->batch == 'Batch 1')
+        $dates[] = ""; 
+        $preOrders = Products::all()
+        ->sortBy('arrival_date'); 
+
+        $unique = $preOrders->unique('arrival_date')->where('received',0);
+
+        $today = Carbon::today()->toDateString();
+        foreach($unique as $data)    
         {
-            $preOrders = Products::orderBy("item_category")
-            ->where('received', 0)
-            ->where('batch', 1)
-            ->get();
-
-            $unique = $preOrders->unique('item_category');
-
-            $collection = $unique->map(function ($array) {
-                return collect($array)->unique('item_category')->all();
-            });
-
-            $finalPro = Products::orderBy("item_category")
-            ->whereIn('id', $collection)
-            ->get();
-
-
-            return $finalPro;
-        }
-        else if($request->batch == 'Batch 2')
-        {
-            $preOrders = DB::table('products')
-            ->select()
-            ->where('received', 0)
-            ->where('batch', 2)
-            ->get();
-
-            return $preOrders;
-        }
-        else if($request->batch == 'Batch 3')
-        {
-            $preOrders = DB::table('products')
-            ->select()
-            ->where('received', 0)
-            ->where('batch', 3)
-            ->get();
-
-            return $preOrders;           
-        }
-        else if($request->batch == 'Batch 4')
-        {
-            $preOrders = DB::table('products')
-            ->select()
-            ->where('received', 0)
-            ->where('batch', 4)
-            ->get();
-
-            return $preOrders;           
+            
+            if($data->arrival_date < $today)
+            {
+                $pastDates[] = $data->arrival_date;
+            }
+            else
+            {
+                $dates[] = $data->arrival_date;
+            }
         }
        
+        $collection = $unique->map(function ($array) {
+            return collect($array)->unique('arrival_date')->all();
+        });
+
+        $finalPro = Products::orderBy("arrival_date")
+            ->whereIn('id', $collection)
+            ->get();
+        if(count($dates)>1)
+        {
+            
+        if ($request->batch == 'Batch Arriving Soonest') {
+            $batch1 = DB::table('products')
+            ->select()->where('arrival_date', $dates[1])->get();
+  
+            return $batch1;
+          } 
+          
+          else if ($request->batch == 'Batch Arriving Second') {
+              $batch1 = DB::table('products')
+              ->select()->where('arrival_date', $dates[2])->get();
+    
+              return $batch1;
+          } else if ($request->batch == 'Batch Arriving Third') {
+              $batch1 = DB::table('products')
+              ->select()->where('arrival_date', $dates[3])->get();
+    
+              return $batch1;
+  
+          } else if ($request->batch == 'Batch Arriving Fourth') {
+              $batch1 = DB::table('products')
+            ->select()->where('arrival_date', $dates[4])->get();
+  
+            return $batch1;
+          }
+        }
+        else
+        {
+            return "No Fresh Stock";
+        }
     }
 }

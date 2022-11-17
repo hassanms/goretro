@@ -36,7 +36,7 @@ export default function CurrentStock() {
                                             {stock.name}
                                         </h3>
                                         <span class="font-bold text-indigo-900 absolute inset-0 p-2">
-                                            {`${stock.views} people are viewing`}
+                                            {`10 people are viewing`}
                                         </span>
                                         <h3 class="text-center text-base text-gray-500">
                                             <a href={`/carousel?category=${stock.name}`}>

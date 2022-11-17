@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Timer from "../components/timer";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, json } from "react-router-dom";
 import "tw-elements";
 import Statusbar from "../components/Statusbar";
 
 export default function Cart() {
+ 
+
   let cartObj = JSON.parse(localStorage.getItem("cart"));
   const total = cartObj.subTotal;
-  console.log(total);
   cartObj = cartObj.cart;
   const [timer, setTimer] = useState("1:30");
 
@@ -52,9 +53,9 @@ export default function Cart() {
           >
             <div>
               <img
-                class="w-4/5"
+                className="w-full"
                 src="https://images.pexels.com/photos/1666738/pexels-photo-1666738.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-              ></img>
+        ></img>
             </div>
             <div class="fixed inset-0 overflow-hidden">
               <div class="absolute inset-0 overflow-hidden">

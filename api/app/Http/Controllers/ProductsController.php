@@ -30,6 +30,7 @@ function checkTier()
         ->where('tier', 'Tier 3')->get();
     $itemsTier3 = count($tier3);
 
+
     if ($itemsTier1 > 0 && $itemsTier2 == 0 && $itemsTier3 == 0) {
         /**
          * Here if a customer only purchase items from Tier 1,
@@ -112,10 +113,12 @@ class ProductsController extends Controller
         /**
          * This api will fetch and return all products in DB
          */
-        $products[] = Products::all();
-
+        $products = Products::all();
+     //   dd($products);
+     Log::debug("Get All Carousel Data", [$products]);
         return [$products];
     }
+
 
     function addProduct(Request $request)
     {
@@ -145,7 +148,7 @@ class ProductsController extends Controller
          *  Add products to stripe dynamically using webhooks
          */
 
-        if ($result) {
+        if ($result !== null) {
 
             return ['Result' => 'Data saved successfully'];
         } else {
@@ -160,21 +163,28 @@ class ProductsController extends Controller
          * This api will display products in carousel by category
          */
 
-        $query = DB::table('products')
+            $query = DB::table('products')
             ->select()
-            ->where('item_category', $category)
-            ->where('received', 1)
-            ->get();
-
-        $preOrder = DB::table('products')
-            ->select()
-            ->where('item_category', $category)
             ->where('received', 0)
             ->get();
+            
+            Log::debug("Query", [$query]);
+    //     ->where('item_category', $category)
+    //     ->where('received', 1)
+    //     ->get();
 
+    //     Log::debug("message", [$query]);
+    //     $query = DB::table('products')->get();
+ 
+    //    // dd($query);
+        $preOrder = DB::table('products')
+            ->select()
+    //         ->where('item_category', $category)
+            ->where('received', 0)
+            ->get();
+    //     dd($preOrder);
         if (count($query) > 0) {
             foreach ($query as $record) {
-
                 $this->item[] = [
                     'id' => $record->id,
                     'item' => $record->item_name,
@@ -189,6 +199,7 @@ class ProductsController extends Controller
                 ];
             }
             return [$this->item, "Current Stock"];
+
         } else {
             foreach ($preOrder as $record) {
 
@@ -209,6 +220,8 @@ class ProductsController extends Controller
         }
     }
 
+
+    //Show Damage Quantity "/carousel/damage"
     function showDamage(Request $request)
     {
         $damageImage = DB::table('products')
@@ -222,6 +235,7 @@ class ProductsController extends Controller
             return "No damage in product";
         }
     }
+
 
     function addToCart(Request $request)
     {
@@ -329,7 +343,6 @@ class ProductsController extends Controller
     }
 
 
-
     function showTier1()
     {
         $tier = DB::table('carts')
@@ -359,6 +372,7 @@ class ProductsController extends Controller
             ->where('tier', 'Tier 3')->get();
         return ["items" => $tier, "count" => count($tier)];
     }
+
 
     function superItem(Request $request)
     {

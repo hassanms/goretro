@@ -6,6 +6,7 @@ import Statusbar from "../components/Statusbar";
 
 export default function PreOrder() {
     const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
     // const [searchParams, setSearchParams] = useSearchParams();
     const [batchItem, setBatch] = useState([]);
     // const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function PreOrder() {
   useEffect(() => {
     axios.get(`http://127.0.0.1:8000/api/pre-order`).then((res) => {
       setItems(res.data);
+      setLoading(false);
     });
   }, []);
 
@@ -39,7 +41,10 @@ export default function PreOrder() {
       });
   };
 
+  if(loading) return <h1>Loading...</h1>
+  
   return (
+
     <>
     <Statusbar />
     <main class="max-h-full">

@@ -30,7 +30,7 @@ function checkTier()
         ->where('tier', 'Tier 3')->get();
     $itemsTier3 = count($tier3);
 
-
+    
     if ($itemsTier1 > 0 && $itemsTier2 == 0 && $itemsTier3 == 0) {
         /**
          * Here if a customer only purchase items from Tier 1,
@@ -115,7 +115,7 @@ class ProductsController extends Controller
          */
         $products = Products::all();
      //   dd($products);
-     Log::debug("Get All Carousel Data", [$products]);
+    //  Log::debug("Get All Carousel Data", [$products]);
         return [$products];
     }
 
@@ -165,10 +165,11 @@ class ProductsController extends Controller
 
             $query = DB::table('products')
             ->select()
+            ->where('item_category', $category)
             ->where('received', 0)
             ->get();
             
-            Log::debug("Query", [$query]);
+            // Log::debug("Query", [$query]);
     //     ->where('item_category', $category)
     //     ->where('received', 1)
     //     ->get();

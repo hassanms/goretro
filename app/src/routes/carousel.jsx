@@ -14,9 +14,7 @@ export default function Carousel() {
   const [damage, setDamage] = useState("hidden");
   const [alertMessage, setAlertMessage] = useState("hidden");
   const navigate = useNavigate();
-  const [input, setInput] = useState({
-    email: "",
-  });
+  const [input, setInput] = useState({email: "",});
   const [tier1Visibility, setTier1Visibility] = useState("hidden");
   const [tier2Visibility, setTier2Visibility] = useState("hidden");
   const [tier3Visibility, setTier3Visibility] = useState("hidden");
@@ -50,7 +48,6 @@ export default function Carousel() {
         .then((res) => {
           if (res.data.disableCheckout === true) {
             setDisableCheckout(res.data.disableCheckout);
-            console.log(res.data.message);
             setAlertMessage("visible");
           } else {
             console.log("Added successfully");
@@ -86,7 +83,6 @@ export default function Carousel() {
 
   const removeItem = (itemId, remove) => {
     // refresh whichTier
-    debugger;
     setWhichTier(0);
     if (remove) {
       items.filter((item) => item.id !== itemId);
